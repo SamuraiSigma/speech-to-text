@@ -1,0 +1,103 @@
+#!/usr/bin/env python
+# This file was based on the openssl module's SCsub
+
+Import('env')
+Import('env_modules')
+
+env_speech_recognizer = env_modules.Clone()
+
+# Sphinxbase source files
+sphinxbase_dir = "sphinxbase"
+
+sphinxbase_sources = [
+    "libsphinxbase/feat/feat.c",
+    "libsphinxbase/feat/cmn_live.c",
+    "libsphinxbase/feat/lda.c",
+    "libsphinxbase/feat/cmn.c",
+    "libsphinxbase/feat/agc.c",
+    "libsphinxbase/fe/fe_warp_inverse_linear.c",
+    "libsphinxbase/fe/fe_warp_piecewise_linear.c",
+    "libsphinxbase/fe/fe_noise.c",
+    "libsphinxbase/fe/fe_prespch_buf.c",
+    "libsphinxbase/fe/fe_sigproc.c",
+    "libsphinxbase/fe/fixlog.c",
+    "libsphinxbase/fe/yin.c",
+    "libsphinxbase/fe/fe_interface.c",
+    "libsphinxbase/fe/fe_warp.c",
+    "libsphinxbase/fe/fe_warp_affine.c",
+    "libsphinxbase/util/listelem_alloc.c",
+    "libsphinxbase/util/genrand.c",
+    "libsphinxbase/util/bitarr.c",
+    "libsphinxbase/util/bitvec.c",
+    "libsphinxbase/util/ckd_alloc.c",
+    "libsphinxbase/util/dtoa.c",
+    "libsphinxbase/util/mmio.c",
+    "libsphinxbase/util/strfuncs.c",
+    "libsphinxbase/util/blas_lite.c",
+    "libsphinxbase/util/priority_queue.c",
+    "libsphinxbase/util/slamch.c",
+    "libsphinxbase/util/slapack_lite.c",
+    "libsphinxbase/util/pio.c",
+    "libsphinxbase/util/matrix.c",
+    "libsphinxbase/util/f2c_lite.c",
+    "libsphinxbase/util/bio.c",
+    "libsphinxbase/util/filename.c",
+    "libsphinxbase/util/cmd_ln.c",
+    "libsphinxbase/util/sbthread.c",
+    "libsphinxbase/util/errno.c",
+    "libsphinxbase/util/err.c",
+    "libsphinxbase/util/logmath.c",
+    "libsphinxbase/util/glist.c",
+    "libsphinxbase/util/profile.c",
+    "libsphinxbase/util/case.c",
+    "libsphinxbase/util/hash_table.c",
+    "libsphinxbase/util/heap.c",
+    "libsphinxbase/lm/jsgf_parser.c",
+    "libsphinxbase/lm/ngram_model_set.c",
+    "libsphinxbase/lm/fsg_model.c",
+    "libsphinxbase/lm/lm_trie.c",
+    "libsphinxbase/lm/ngram_model.c",
+    "libsphinxbase/lm/lm_trie_quant.c",
+    "libsphinxbase/lm/jsgf.c",
+    "libsphinxbase/lm/ngram_model_trie.c",
+    "libsphinxbase/lm/ngrams_raw.c",
+    "libsphinxbase/lm/jsgf_scanner.c",
+    "sphinx_jsgf2fsg/main.c",
+    "sphinx_adtools/cont_seg.c",
+    "sphinx_adtools/sphinx_pitch.c",
+    "sphinx_lmtools/sphinx_lm_eval.c",
+    "sphinx_lmtools/sphinx_lm_convert.c",
+    "sphinx_fe/sphinx_fe.c",
+    "sphinx_cepview/main_cepview.c",
+    "libsphinxad/ad_pulse.c",
+    "libsphinxad/ad_oss.c",
+    # TODO: Check system to know which of the below files should be used
+    # "libsphinxad/ad_win32.c",
+    # "libsphinxad/ad_openal.c",
+    # "libsphinxad/ad_alsa.c",
+    "libsphinxad/ad_base.c"
+]
+
+sphinxbase_sources = [sphinxbase_dir + "/" + file for file in sphinxbase_sources]
+env_speech_recognizer.add_source_files(env.modules_sources,
+                                       sphinxbase_sources)
+
+# Add path to Sphinxbase include/ folder
+sphinxbase_include_paths = [
+    "include",
+    "include/android",
+    "include/sphinxbase",
+    "include/win32"
+    # "include/wince"
+]
+
+env_speech_recognizer.Append(CPPPATH=[sphinxbase_dir + "/" + dir for dir in sphinxbase_include_paths])
+
+# -DHAVE_CONFIG_H allows compiling of libsphinxbase/util source files (this
+# flag was found when running a Makefile in the same directory)
+env_speech_recognizer.Append(CFLAGS=['-O2', '-Wall', '-DHAVE_CONFIG_H'])
+
+# Module sources
+env_speech_recognizer.add_source_files(env.modules_sources, "*.cpp")
+
+Export('env')

@@ -2,6 +2,8 @@
 #define SPEECH_RECOGNIZER_H
 
 #include "scene/main/node.h"
+#include "sphinxbase/err.h"
+#include "sphinxbase/ad.h"
 
 class SpeechRecognizer : public Node {
     OBJ_TYPE(SpeechRecognizer, Node);
