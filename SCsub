@@ -97,6 +97,48 @@ env_speech_recognizer.Append(CPPPATH=[sphinxbase_dir + "/" + dir for dir in sphi
 # flag was found when running a Makefile in the same directory)
 env_speech_recognizer.Append(CFLAGS=['-O2', '-Wall', '-DHAVE_CONFIG_H'])
 
+# Pocketsphinx source files
+pocketsphinx_dir = "pocketsphinx"
+
+pocketsphinx_sources = [
+    "ptm_mgau.c",
+    "kws_detections.c",
+    "hmm.c",
+    "dict2pid.c",
+    "kws_search.c",
+    "ngram_search_fwdflat.c",
+    "fsg_history.c",
+    "ps_alignment.c",
+    "ngram_search_fwdtree.c",
+    "state_align_search.c",
+    "ms_gauden.c",
+    "ms_senone.c",
+    "mdef.c",
+    "s2_semi_mgau.c",
+    "phone_loop_search.c",
+    "acmod.c",
+    "dict.c",
+    "vector.c",
+    "allphone_search.c",
+    "ps_mllr.c",
+    "fsg_lextree.c",
+    "ngram_search.c",
+    "ps_lattice.c",
+    "ms_mgau.c",
+    "bin_mdef.c",
+    "fsg_search.c",
+    "blkarray_list.c",
+    "tmat.c",
+    "pocketsphinx.c"
+]
+
+pocketsphinx_sources = [pocketsphinx_dir + "/" + file for file in pocketsphinx_sources]
+env_speech_recognizer.add_source_files(env.modules_sources,
+                                       pocketsphinx_sources)
+
+# Add path to Pocketsphinx include/ folder
+env_speech_recognizer.Append(CPPPATH=pocketsphinx_dir + "/" + "include")
+
 # Module sources
 env_speech_recognizer.add_source_files(env.modules_sources, "*.cpp")
 
