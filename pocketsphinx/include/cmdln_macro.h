@@ -200,7 +200,7 @@
       "Delay to wait for best detection score" },               \
 { "-kws_threshold",                                             \
       ARG_FLOAT64,                                              \
-      "1e-30",                                                  \
+      "1",                                                      \
       "Threshold for p(hyp)/p(alternatives) ratio" }
 
 /** Command-line options for finite state grammars. */
@@ -234,7 +234,7 @@
       "Perform phoneme decoding with phonetic lm" },					\
 { "-allphone_ci",									\
       ARG_BOOLEAN,									\
-      "yes",										\
+      "no",										\
       "Perform phoneme decoding with phonetic lm and context-independent units only" }, \
 { "-lm",										\
       ARG_STRING,									\

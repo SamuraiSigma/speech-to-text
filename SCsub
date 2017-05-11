@@ -44,7 +44,6 @@ sphinxbase_sources = [
     "libsphinxbase/util/filename.c",
     "libsphinxbase/util/cmd_ln.c",
     "libsphinxbase/util/sbthread.c",
-    "libsphinxbase/util/errno.c",
     "libsphinxbase/util/err.c",
     "libsphinxbase/util/logmath.c",
     "libsphinxbase/util/glist.c",
@@ -62,23 +61,16 @@ sphinxbase_sources = [
     "libsphinxbase/lm/ngram_model_trie.c",
     "libsphinxbase/lm/ngrams_raw.c",
     "libsphinxbase/lm/jsgf_scanner.c",
-    "sphinx_jsgf2fsg/main.c",
-    "sphinx_adtools/cont_seg.c",
-    "sphinx_adtools/sphinx_pitch.c",
-    "sphinx_lmtools/sphinx_lm_eval.c",
-    "sphinx_lmtools/sphinx_lm_convert.c",
-    "sphinx_fe/sphinx_fe.c",
-    "sphinx_cepview/main_cepview.c",
     "libsphinxad/ad_pulse.c",
     "libsphinxad/ad_oss.c",
     # TODO: Check system to know which of the below files should be used
     # "libsphinxad/ad_win32.c",
     # "libsphinxad/ad_openal.c",
-    # "libsphinxad/ad_alsa.c",
+    "libsphinxad/ad_alsa.c",
     "libsphinxad/ad_base.c"
 ]
 
-sphinxbase_sources = [sphinxbase_dir + "/" + file for file in sphinxbase_sources]
+sphinxbase_sources = [sphinxbase_dir + "/src/" + file for file in sphinxbase_sources]
 env_speech_recognizer.add_source_files(env.modules_sources,
                                        sphinxbase_sources)
 
@@ -132,7 +124,7 @@ pocketsphinx_sources = [
     "pocketsphinx.c"
 ]
 
-pocketsphinx_sources = [pocketsphinx_dir + "/" + file for file in pocketsphinx_sources]
+pocketsphinx_sources = [pocketsphinx_dir + "/src/" + file for file in pocketsphinx_sources]
 env_speech_recognizer.add_source_files(env.modules_sources,
                                        pocketsphinx_sources)
 

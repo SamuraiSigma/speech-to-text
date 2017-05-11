@@ -113,7 +113,6 @@ detect_riff(sphinx_wave2feat_t *wtf)
 {
     FILE *fh;
     MSWAV_hdr hdr;
-    double samprate;
 
     if ((fh = fopen(wtf->infile, "rb")) == NULL) {
         E_ERROR_SYSTEM("Failed to open %s", wtf->infile);
@@ -134,10 +133,8 @@ detect_riff(sphinx_wave2feat_t *wtf)
 	fclose(fh);
 	return -1;
     }
-    samprate = cmd_ln_float32_r(wtf->config, "-samprate");
-    if (samprate != hdr.SamplingFreq) {
-	E_ERROR("Sample rate %d does not match configured value %.1f in file '%s'\n", 
-	        hdr.SamplingFreq, samprate, wtf->infile);
+    if (cmd_ln_float32_r(wtf->config, "-samprate") != hdr.SamplingFreq) {
+	E_ERROR("Sample rate %.1f does not match configured value in file '%s'\n", hdr.SamplingFreq, wtf->infile);
 	fclose(fh);
 	return -1;
     }
@@ -325,7 +322,6 @@ detect_sphinx_mfc(sphinx_wave2feat_t *wtf)
             SWAP_INT32(&len);
             E_ERROR("Mismatch in header/file lengths: 0x%08x vs 0x%08x\n",
                     len, flen);
-            fclose(fh);
             return -1;
         }
         /* Set the input endianness to the opposite of the machine endianness... */

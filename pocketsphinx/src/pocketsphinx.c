@@ -710,14 +710,12 @@ ps_set_jsgf_string(ps_decoder_t *ps, const char *name, const char *jsgf_string)
       rule = jsgf_get_rule(jsgf, toprule);
       if (rule == NULL) {
           E_ERROR("Start rule %s not found\n", toprule);
-          jsgf_grammar_free(jsgf);
           return -1;
       }
   } else {
       rule = jsgf_get_public_rule(jsgf);
       if (rule == NULL) {
           E_ERROR("No public rules found in input string\n");
-          jsgf_grammar_free(jsgf);
           return -1;
       }
   }
@@ -726,7 +724,6 @@ ps_set_jsgf_string(ps_decoder_t *ps, const char *name, const char *jsgf_string)
   fsg = jsgf_build_fsg(jsgf, rule, ps->lmath, lw);
   result = ps_set_fsg(ps, name, fsg);
   fsg_model_free(fsg);
-  jsgf_grammar_free(jsgf);
   return result;
 }
 
