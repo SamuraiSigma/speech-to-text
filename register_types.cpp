@@ -7,5 +7,5 @@ void register_speech_recognizer_types() {
 }
 
 void unregister_speech_recognizer_types() {
-   // Nothing to do here
+    // Nothing to do here
 }
