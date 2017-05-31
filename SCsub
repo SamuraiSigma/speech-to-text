@@ -2,9 +2,21 @@
 # This file was based on the openssl module's SCsub
 
 Import('env')
-Import('env_modules')
 
-env_speech_recognizer = env_modules.Clone()
+module_env = env.Clone()
+
+# -DHAVE_CONFIG_H allows compiling of libsphinxbase/util source files (this
+# flag was found when running a Makefile in the same directory)
+module_env.Append(CFLAGS=['-O2', '-Wall', '-Wno-unused-result', '-DHAVE_CONFIG_H'])
+
+# ---------------------------------------------------------------------
+
+local_sources = [
+    "register_types.cpp",
+    "speech_recognizer.cpp"
+]
+
+# ---------------------------------------------------------------------
 
 # Sphinxbase source files
 sphinxbase_dir = "sphinxbase"
@@ -61,18 +73,14 @@ sphinxbase_sources = [
     "libsphinxbase/lm/ngram_model_trie.c",
     "libsphinxbase/lm/ngrams_raw.c",
     "libsphinxbase/lm/jsgf_scanner.c",
-    "libsphinxad/ad_pulse.c",
-    "libsphinxad/ad_oss.c",
+    "libsphinxad/ad_pulse.c"
     # TODO: Check system to know which of the below files should be used
+    # "libsphinxad/ad_oss.c",
     # "libsphinxad/ad_win32.c",
     # "libsphinxad/ad_openal.c",
-    "libsphinxad/ad_alsa.c",
-    "libsphinxad/ad_base.c"
+    # "libsphinxad/ad_alsa.c",
+    # "libsphinxad/ad_base.c"
 ]
-
-sphinxbase_sources = [sphinxbase_dir + "/src/" + file for file in sphinxbase_sources]
-env_speech_recognizer.add_source_files(env.modules_sources,
-                                       sphinxbase_sources)
 
 # Add path to Sphinxbase include/ folder
 sphinxbase_include_paths = [
@@ -83,11 +91,10 @@ sphinxbase_include_paths = [
     # "include/wince"
 ]
 
-env_speech_recognizer.Append(CPPPATH=[sphinxbase_dir + "/" + dir for dir in sphinxbase_include_paths])
+sphinxbase_sources = [sphinxbase_dir + "/src/" + file for file in sphinxbase_sources]
+module_env.Append(CPPPATH=[sphinxbase_dir + "/" + dir for dir in sphinxbase_include_paths])
 
-# -DHAVE_CONFIG_H allows compiling of libsphinxbase/util source files (this
-# flag was found when running a Makefile in the same directory)
-env_speech_recognizer.Append(CFLAGS=['-O2', '-Wall', '-DHAVE_CONFIG_H'])
+# ---------------------------------------------------------------------
 
 # Pocketsphinx source files
 pocketsphinx_dir = "pocketsphinx"
@@ -125,13 +132,28 @@ pocketsphinx_sources = [
 ]
 
 pocketsphinx_sources = [pocketsphinx_dir + "/src/" + file for file in pocketsphinx_sources]
-env_speech_recognizer.add_source_files(env.modules_sources,
-                                       pocketsphinx_sources)
+module_env.Append(CPPPATH=pocketsphinx_dir + "/" + "include")
 
-# Add path to Pocketsphinx include/ folder
-env_speech_recognizer.Append(CPPPATH=pocketsphinx_dir + "/" + "include")
+# ---------------------------------------------------------------------
 
-# Module sources
-env_speech_recognizer.add_source_files(env.modules_sources, "*.cpp")
+if ARGUMENTS.get('speech_recognizer_shared', 'no') == 'yes':
+    # Shared lib compilation
+    module_env.Append(CXXFLAGS='-fPIC')  # Shared library flag
+    module_env['LIBS'] = []
 
-Export('env')
+    all_sources = sphinxbase_sources + pocketsphinx_sources + local_sources
+    shared_lib = module_env.SharedLibrary(target='#bin/speech_recognizer',
+                                          source=all_sources)
+
+    # Necessary to create the shared library
+    env.Append(LIBS=[shared_lib])
+
+    # Notify main env of new library dependency
+    shared_lib_shim = shared_lib[0].name.rsplit('.', 1)[0]
+    env.Append(LIBS=[shared_lib_shim])
+    env.Append(LIBPATH=['#bin'])
+else:
+    # Static compilation
+    module_env.add_source_files(env.modules_sources, sphinxbase_sources)
+    module_env.add_source_files(env.modules_sources, pocketsphinx_sources)
+    module_env.add_source_files(env.modules_sources, local_sources)
