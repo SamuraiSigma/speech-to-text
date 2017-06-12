@@ -1,8 +1,6 @@
 #include <cstdio>
 #include "speech_recognizer.h"
-
-#include "core/os/memory.h"  // memalloc(), memfree(), memdelete()
-#include "core/os/os.h"      // OS::delay_usec()
+#include "core/os/memory.h"     // memalloc(), memfree(), memdelete()
 
 /*
  * Adds the -adcdev option as a possible command line argument.
@@ -13,7 +11,7 @@ static arg_t cont_args_def[] = {
     // Microphone
     {"-adcdev",
      ARG_STRING,
-     NULL,
+     NULL,  // Use default system microphone
      "Name of audio device to use for input."},
     CMDLN_EMPTY_OPTION
 };
@@ -68,14 +66,19 @@ void SpeechRecognizer::config(String hmm_dirname, String dict_filename,
     recorder = ad_open_dev(cmd_ln_str_r(conf, "-adcdev"),
                             (int) cmd_ln_float32_r(conf, "-samprate"));
 
-    if (recorder == NULL)
+    if (recorder == NULL) {
+        cmd_ln_free_r(conf);
         throw "Failed to open audio device!";
+    }
 
     // Creater decoder variable
     decoder = ps_init(conf);
 
-    if (decoder == NULL)
+    if (decoder == NULL) {
+        cmd_ln_free_r(conf);
+        ad_close(recorder);
         throw "Failed to create decoder!";
+    }
 }
 
 void SpeechRecognizer::run() {
@@ -87,12 +90,9 @@ void SpeechRecognizer::run() {
 }
 
 void SpeechRecognizer::stop() {
-    if (is_running) {
+    if (recognition != NULL) {
         is_running = false;
         Thread::wait_to_finish(recognition);
-    }
-
-    if (recognition != NULL) {
         memdelete(recognition);
         recognition = NULL;
     }
@@ -105,9 +105,7 @@ void SpeechRecognizer::thread_recognize(void *s) {
 
 void SpeechRecognizer::recognize() {
     int16 buffer[BUFFER_SIZE];
-    uint8 utt_started = FALSE;
     int32 n;
-
     const char *hyp;
 
     // Start recording
@@ -132,31 +130,18 @@ void SpeechRecognizer::recognize() {
         // Process captured sound
         ps_process_raw(decoder, buffer, n, FALSE, FALSE);
 
-        // If speech was captured while in silent state, start new utterance
-        if (ps_get_in_speech(decoder) && !utt_started)
-            utt_started = TRUE;
+        // Check for keyword in captured sound
+        hyp = ps_get_hyp(decoder, NULL);
+        if (hyp != NULL) {
+            printf(">> %s\n", hyp);
 
-        // Speech stopped while in an utterance
-        if (!ps_get_in_speech(decoder) && utt_started) {
-            // End this utterance phase
+            // Restart decoder
             ps_end_utt(decoder);
-
-            // Show hypothesis (what was said in microphone)
-            hyp = ps_get_hyp(decoder, NULL);
-            if (hyp != NULL)
-                printf(">> %s\n", hyp);
-
-            // Start new utterance
             if (ps_start_utt(decoder) < 0) {
                 is_running = false;
-                throw "Failed to start utterance!";
+                throw "Failed to start utterance";
             }
-
-            utt_started = FALSE;
         }
-
-        // Wait msecs until next microphone input is captured
-        OS::get_singleton()->delay_usec(SLEEP_TIME * 1000);
     }
 
     // Stop recording
@@ -187,12 +172,11 @@ SpeechRecognizer::SpeechRecognizer() {
 }
 
 SpeechRecognizer::~SpeechRecognizer() {
-    if (is_running) {
+    if (recognition != NULL) {
         is_running = false;
         Thread::wait_to_finish(recognition);
-    }
-    if (recognition != NULL)
         memdelete(recognition);
+    }
 
     if (recorder != NULL) ad_close(recorder);
     if (decoder  != NULL) ps_free(decoder);

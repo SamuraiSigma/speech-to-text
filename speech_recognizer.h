@@ -11,9 +11,6 @@
 // Microphone recorder buffer size
 #define BUFFER_SIZE 2048
 
-// Time, in msecs, to wait before listening to microphone again
-#define SLEEP_TIME 100
-
 class SpeechRecognizer : public Node {
     OBJ_TYPE(SpeechRecognizer, Node);
 
