@@ -9,8 +9,8 @@
 #include "sphinxbase/ad.h"
 #include "pocketsphinx.h"
 
-// Microphone recorder buffer size
-#define BUFFER_SIZE 2048
+// Microphone recorder default buffer size
+#define REC_DEFAULT_BUF_SIZE 2048
 
 class SpeechRecognizer : public Node {
     OBJ_TYPE(SpeechRecognizer, Node);
@@ -29,6 +29,7 @@ private:
 
     Thread *recognition;  // Used to run the speech recognition in parallel
     bool is_running;      // If true, speech recognition loop is currently on
+    int rec_buf_size;     // Microphone recorder buffer size
 
     // Stores keywords recognized from microphone in a queue fashion
     Vector<String> kws_buffer;
@@ -85,12 +86,24 @@ public:
     /*
      * Returns true if the keywords buffer is empty, or false otherwise.
      */
-    bool buffer_empty();
+    bool buffer_is_empty();
 
     /*
      * Clears all keywords in the buffer, leaving it with a size of 0.
      */
     void buffer_clear();
+
+    /*
+     * Returns the microphone recorder buffer size used for speech recognition.
+     */
+    int get_rec_buf_size();
+
+    /*
+     * Sets the microphone recorder buffer size used for speech recognition as the
+     * specified value. This method must be called before run(), or it won't have
+     * any effect.
+     */
+    void set_rec_buf_size(int rec_buf_size);
 
     /*
      * Initializes speech recognizer variables.

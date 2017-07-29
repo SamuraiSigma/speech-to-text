@@ -104,7 +104,8 @@ void SpeechRecognizer::thread_recognize(void *s) {
 }
 
 void SpeechRecognizer::recognize() {
-    int16 buffer[BUFFER_SIZE];
+    int current_buf_size = rec_buf_size;
+    int16 buffer[current_buf_size];
     int32 n;
     const char *hyp;
 
@@ -122,7 +123,7 @@ void SpeechRecognizer::recognize() {
 
     while (is_running) {
         // Read data from microphone
-        if ((n = ad_read(recorder, buffer, BUFFER_SIZE)) < 0) {
+        if ((n = ad_read(recorder, buffer, current_buf_size)) < 0) {
             is_running = false;
             throw "Failed to read audio\n";
         }
@@ -163,7 +164,7 @@ int SpeechRecognizer::buffer_size() {
     return kws_buffer.size();
 }
 
-bool SpeechRecognizer::buffer_empty() {
+bool SpeechRecognizer::buffer_is_empty() {
     return kws_buffer.empty();
 }
 
@@ -171,14 +172,28 @@ void SpeechRecognizer::buffer_clear() {
     kws_buffer.clear();
 }
 
+int SpeechRecognizer::get_rec_buf_size() {
+    return rec_buf_size;
+}
+
+void SpeechRecognizer::set_rec_buf_size(int rec_buf_size) {
+    this->rec_buf_size = rec_buf_size;
+}
+
 void SpeechRecognizer::_bind_methods() {
     ObjectTypeDB::bind_method("config", &SpeechRecognizer::config);
     ObjectTypeDB::bind_method("run", &SpeechRecognizer::run);
     ObjectTypeDB::bind_method("stop", &SpeechRecognizer::stop);
+
     ObjectTypeDB::bind_method("buffer_get", &SpeechRecognizer::buffer_get);
     ObjectTypeDB::bind_method("buffer_size", &SpeechRecognizer::buffer_size);
-    ObjectTypeDB::bind_method("buffer_empty", &SpeechRecognizer::buffer_empty);
+    ObjectTypeDB::bind_method("buffer_is_empty", &SpeechRecognizer::buffer_is_empty);
     ObjectTypeDB::bind_method("buffer_clear", &SpeechRecognizer::buffer_clear);
+
+    ObjectTypeDB::bind_method("get_rec_buf_size",
+                              &SpeechRecognizer::get_rec_buf_size);
+    ObjectTypeDB::bind_method("set_rec_buf_size",
+                              &SpeechRecognizer::set_rec_buf_size);
 }
 
 SpeechRecognizer::SpeechRecognizer() {
@@ -195,11 +210,12 @@ SpeechRecognizer::SpeechRecognizer() {
 
     recognition = NULL;
     is_running = false;
+    rec_buf_size = REC_DEFAULT_BUF_SIZE;
 }
 
 SpeechRecognizer::~SpeechRecognizer() {
     printf("Keywords (%d):", buffer_size());
-    while (!buffer_empty()) {
+    while (!buffer_is_empty()) {
         printf("%s\n", buffer_get().c_str());
     }
 
