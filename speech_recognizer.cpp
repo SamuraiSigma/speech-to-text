@@ -133,6 +133,7 @@ void SpeechRecognizer::recognize() {
         // Check for keyword in captured sound
         hyp = ps_get_hyp(decoder, NULL);
         if (hyp != NULL) {
+            kws_buffer.push_back(String(hyp));
             printf(">> %s\n", hyp);
 
             // Restart decoder
@@ -149,10 +150,35 @@ void SpeechRecognizer::recognize() {
         throw "Failed to stop recording";
 }
 
+String SpeechRecognizer::buffer_get() {
+    if (kws_buffer.size() == 0)
+        throw "Can't get keyword from an empty buffer";
+
+    String keyword = kws_buffer.get(0);
+    kws_buffer.remove(0);
+    return keyword;
+}
+
+int SpeechRecognizer::buffer_size() {
+    return kws_buffer.size();
+}
+
+bool SpeechRecognizer::buffer_empty() {
+    return kws_buffer.empty();
+}
+
+void SpeechRecognizer::buffer_clear() {
+    kws_buffer.clear();
+}
+
 void SpeechRecognizer::_bind_methods() {
     ObjectTypeDB::bind_method("config", &SpeechRecognizer::config);
     ObjectTypeDB::bind_method("run", &SpeechRecognizer::run);
     ObjectTypeDB::bind_method("stop", &SpeechRecognizer::stop);
+    ObjectTypeDB::bind_method("buffer_get", &SpeechRecognizer::buffer_get);
+    ObjectTypeDB::bind_method("buffer_size", &SpeechRecognizer::buffer_size);
+    ObjectTypeDB::bind_method("buffer_empty", &SpeechRecognizer::buffer_empty);
+    ObjectTypeDB::bind_method("buffer_clear", &SpeechRecognizer::buffer_clear);
 }
 
 SpeechRecognizer::SpeechRecognizer() {
@@ -172,6 +198,11 @@ SpeechRecognizer::SpeechRecognizer() {
 }
 
 SpeechRecognizer::~SpeechRecognizer() {
+    printf("Keywords (%d):", buffer_size());
+    while (!buffer_empty()) {
+        printf("%s\n", buffer_get().c_str());
+    }
+
     if (recognition != NULL) {
         is_running = false;
         Thread::wait_to_finish(recognition);

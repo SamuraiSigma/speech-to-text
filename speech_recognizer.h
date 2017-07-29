@@ -3,6 +3,7 @@
 
 #include "scene/main/node.h"
 #include "core/os/thread.h"
+#include "core/vector.h"
 
 #include "sphinxbase/err.h"
 #include "sphinxbase/ad.h"
@@ -26,8 +27,11 @@ private:
     // C strings for the above String names
     char *hmm, *dict, *kws;
 
-    Thread *recognition; // Used to run the speech recognition in parallel
-    bool is_running;     // If true, speech recognition loop is currently on
+    Thread *recognition;  // Used to run the speech recognition in parallel
+    bool is_running;      // If true, speech recognition loop is currently on
+
+    // Stores keywords recognized from microphone in a queue fashion
+    Vector<String> kws_buffer;
 
     /*
      * Thread wrapper function, calls recognize() method of its SpeechRecognizer
@@ -66,6 +70,27 @@ public:
      * called previously, this function does nothing.
      */
     void stop();
+
+    /*
+     * Removes and returns the first element in the keywords buffer.
+     * If the buffer is empty, returns NULL.
+     */
+    String buffer_get();
+
+    /*
+     * Returns how many keywords are in the buffer.
+     */
+    int buffer_size();
+
+    /*
+     * Returns true if the keywords buffer is empty, or false otherwise.
+     */
+    bool buffer_empty();
+
+    /*
+     * Clears all keywords in the buffer, leaving it with a size of 0.
+     */
+    void buffer_clear();
 
     /*
      * Initializes speech recognizer variables.
