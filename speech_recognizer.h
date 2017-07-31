@@ -10,7 +10,10 @@
 #include "pocketsphinx.h"
 
 // Microphone recorder default buffer size
-#define REC_DEFAULT_BUF_SIZE 2048
+#define DEFAULT_REC_BUFFER_SIZE 2048
+
+// Default capacity for the keywords buffer
+#define DEFAULT_KWS_BUFFER_CAP 200
 
 class SpeechRecognizer : public Node {
     OBJ_TYPE(SpeechRecognizer, Node);
@@ -29,10 +32,13 @@ private:
 
     Thread *recognition;  // Used to run the speech recognition in parallel
     bool is_running;      // If true, speech recognition loop is currently on
-    int rec_buf_size;     // Microphone recorder buffer size
+    int rec_buffer_size;     // Microphone recorder buffer size
 
     // Stores keywords recognized from microphone in a queue fashion
     Vector<String> kws_buffer;
+
+    // Maximum number of keywords that will be stored in kws_buffer
+    int kws_buffer_cap;
 
     /*
      * Thread wrapper function, calls recognize() method of its SpeechRecognizer
@@ -86,7 +92,7 @@ public:
     /*
      * Returns true if the keywords buffer is empty, or false otherwise.
      */
-    bool buffer_is_empty();
+    bool buffer_empty();
 
     /*
      * Clears all keywords in the buffer, leaving it with a size of 0.
@@ -96,14 +102,24 @@ public:
     /*
      * Returns the microphone recorder buffer size used for speech recognition.
      */
-    int get_rec_buf_size();
+    int get_rec_buffer_size();
 
     /*
      * Sets the microphone recorder buffer size used for speech recognition as the
-     * specified value. This method must be called before run(), or it won't have
-     * any effect.
+     * specified value. Must be >= 0. This method must be called before run(), or it
+     * won't have any effect.
      */
-    void set_rec_buf_size(int rec_buf_size);
+    void set_rec_buffer_size(int rec_buffer_size);
+
+    /*
+     * Returns the keywords buffer capacity.
+     */
+    int get_kws_buffer_cap();
+
+    /*
+     * Sets the keywords buffer capacity as the specified value. Must be >= 0.
+     */
+    void set_kws_buffer_cap(int kws_buffer_cap);
 
     /*
      * Initializes speech recognizer variables.
