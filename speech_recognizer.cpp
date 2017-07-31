@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <cstdio>               // printf()
 #include "speech_recognizer.h"
 #include "core/os/memory.h"     // memalloc(), memfree(), memdelete()
 
@@ -45,6 +45,10 @@ void SpeechRecognizer::config(String hmm_dirname, String dict_filename,
             throw "memalloc(): Couldn't allocate memory!";
 
         wcstombs(convert[i], names[i].c_str(), len + 1);
+
+        #ifdef DEBUG_ENABLED
+            printf("[SpeechRecognizer Argument] %s\n", convert[i]);
+        #endif
     }
 
     // Create configuration variable
@@ -135,7 +139,10 @@ void SpeechRecognizer::recognize() {
         hyp = ps_get_hyp(decoder, NULL);
         if (hyp != NULL) {
             kws_buffer.push_back(String(hyp));
-            printf(">> %s\n", hyp);
+
+            #ifdef DEBUG_ENABLED
+                printf("[SpeechRecognizer] %s\n", hyp);
+            #endif
 
             // Restart decoder
             ps_end_utt(decoder);
@@ -214,11 +221,6 @@ SpeechRecognizer::SpeechRecognizer() {
 }
 
 SpeechRecognizer::~SpeechRecognizer() {
-    printf("Keywords (%d):", buffer_size());
-    while (!buffer_is_empty()) {
-        printf("%s\n", buffer_get().c_str());
-    }
-
     if (recognition != NULL) {
         is_running = false;
         Thread::wait_to_finish(recognition);
