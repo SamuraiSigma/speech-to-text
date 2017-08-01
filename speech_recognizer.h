@@ -32,7 +32,11 @@ private:
 
     Thread *recognition;  // Used to run the speech recognition in parallel
     bool is_running;      // If true, speech recognition loop is currently on
-    int rec_buffer_size;     // Microphone recorder buffer size
+    int rec_buffer_size;  // Microphone recorder buffer size
+
+    // Stores the last error occurred in the recognition started by the run() method
+    // (if no error has yet ocurred, then its value is OK)
+    SpeechRecognizerErr running_err;
 
     // Stores keywords recognized from microphone in a queue fashion
     Vector<String> kws_buffer;
@@ -58,25 +62,57 @@ protected:
     static void _bind_methods();
 
 public:
+    enum SpeechRecognizerErr {
+        OK,
+        MULTIBYTE_STR_ERR,
+        MEMALLOC_ERR,
+        CONFIG_CREATE_ERR,
+        AUDIO_DEV_OPEN_ERR,
+        DECODER_CREATE_ERR,
+        NO_CONFIG_ERR,
+        REC_START_ERR,
+        REC_STOP_ERR,
+        UTT_START_ERR
+        UTT_RESTART_ERR,
+        AUDIO_READ_ERR
+    };
+
     /*
      * Creates a configuration object for recognizing speech. Receives a directory
      * containing files for the Hidden Markov Model, a dictionary with words from
      * the desired language and a keywords file specifying keywords and their
-     * threshold values. These files must follow Pocketsphinx conventions.
+     * threshold values. These files must follow Pocketsphinx conventions. Returns a
+     * SpeechRecognizerErr value (OK is everything went well, or a different value
+     * otherwise).
      */
-    void config(String hmm_dirname, String dict_filename, String kws_filename);
+    SpeechRecognizerErr config(String hmm_dirname, String dict_filename,
+                            String kws_filename);
 
     /*
      * Creates a thread to repeatedly listen to keywords. Must call config()
      * first, or it will fail. The thread can be stopped with the stop() method.
+     * Returns a SpeechRecognizerErr value (OK is everything went well, or a
+     * different value otherwise).
      */
-    void run();
+    SpeechRecognizerErr run();
 
     /*
      * Stops a created thread that is running the run() method. If run() wasn't
      * called previously, this function does nothing.
      */
     void stop();
+
+    /*
+     * Returns the last error occurred in the recognition started by run().
+     * If no error has yet ocurred, then returns OK.
+     */
+    SpeechRecognizerErr get_run_error();
+
+    /*
+     * Resets the variable that stores the last error ocurred in the recognition
+     * started by the run() method, setting its value to SpeechRecognizerErr OK.
+     */
+    void reset_run_error();
 
     /*
      * Removes and returns the first element in the keywords buffer.
