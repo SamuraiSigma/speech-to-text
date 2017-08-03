@@ -182,8 +182,10 @@ void SpeechRecognizer::reset_run_error() {
 }
 
 String SpeechRecognizer::buffer_get() {
-    if (buffer_empty())
+    if (buffer_empty()) {
+        fprintf(stderr, "Warning: Empty keywords buffer, returning empty String!\n");
         return String("");
+    }
 
     String keyword = kws_buffer.get(0);
     kws_buffer.remove(0);
