@@ -18,6 +18,22 @@
 class SpeechRecognizer : public Node {
     OBJ_TYPE(SpeechRecognizer, Node);
 
+    // Represents an error that can occur when calling a SpeechRecognizer method
+    enum Error {
+        OK,                  // No error occurred
+        MULTIBYTE_STR_ERR,   // Couldn't convert filename to a multibyte sequence
+        MEMALLOC_ERR,        // No memory available for allocation
+        CONFIG_CREATE_ERR,   // Couldn't create Pocketsphinx config variable
+        AUDIO_DEV_OPEN_ERR,  // Couldn't open audio device (microphone)
+        DECODER_CREATE_ERR,  // Couldn't create Sphinxbase decoder variable
+        NO_CONFIG_ERR,       // Possibly called run() without calling config() first
+        REC_START_ERR,       // Couldn't start recording user's voice
+        REC_STOP_ERR,        // Couldn't stop recording user's voice
+        UTT_START_ERR,       // Couldn't start utterance during speech recognition
+        UTT_RESTART_ERR,     // Couldn't restart utterance during speech recognition
+        AUDIO_READ_ERR       // Error while reading data from recorder
+    };
+
 private:
     cmd_ln_t *conf;         // Configuration type for sphinx variables
     ad_rec_t *recorder;     // Records sound from microphone
@@ -36,7 +52,7 @@ private:
 
     // Stores the last error occurred in the recognition started by the run() method
     // (if no error has yet ocurred, then its value is OK)
-    SpeechRecognizerErr running_err;
+    Error running_err;
 
     // Stores keywords recognized from microphone in a queue fashion
     Vector<String> kws_buffer;
@@ -48,7 +64,7 @@ private:
      * Thread wrapper function, calls recognize() method of its SpeechRecognizer
      * argument.
      */
-    static void thread_recognize(void *speech_recog);
+    static void thread_recognize(void *sr);
 
     /*
      * Repeatedly listens to keywords from the user's microphone input.
@@ -62,39 +78,36 @@ protected:
     static void _bind_methods();
 
 public:
-    enum SpeechRecognizerErr {
-        OK,
-        MULTIBYTE_STR_ERR,
-        MEMALLOC_ERR,
-        CONFIG_CREATE_ERR,
-        AUDIO_DEV_OPEN_ERR,
-        DECODER_CREATE_ERR,
-        NO_CONFIG_ERR,
-        REC_START_ERR,
-        REC_STOP_ERR,
-        UTT_START_ERR
-        UTT_RESTART_ERR,
-        AUDIO_READ_ERR
-    };
-
     /*
      * Creates a configuration object for recognizing speech. Receives a directory
      * containing files for the Hidden Markov Model, a dictionary with words from
      * the desired language and a keywords file specifying keywords and their
-     * threshold values. These files must follow Pocketsphinx conventions. Returns a
-     * SpeechRecognizerErr value (OK is everything went well, or a different value
-     * otherwise).
+     * threshold values. These files must follow Pocketsphinx conventions.
+     *
+     * Returns one of the following Error values:
+     * - OK
+     * - MULTIBYTE_STR_ERR
+     * - MEMALLOC_ERR
+     * - CONFIG_CREATE_ERR
+     * - AUDIO_DEV_OPEN_ERR
+     * - DECODER_CREATE_ERR
      */
-    SpeechRecognizerErr config(String hmm_dirname, String dict_filename,
-                            String kws_filename);
+    Error config(String hmm_dirname, String dict_filename, String kws_filename);
 
     /*
      * Creates a thread to repeatedly listen to keywords. Must call config()
      * first, or it will fail. The thread can be stopped with the stop() method.
-     * Returns a SpeechRecognizerErr value (OK is everything went well, or a
-     * different value otherwise).
+     *
+     * Returns one of the following Error values:
+     * - OK
+     * - NO_CONFIG_ERR
      */
-    SpeechRecognizerErr run();
+    Error run();
+
+    /*
+     * Returns true if the speech recognition thread is active, or false otherwise.
+     */
+    bool running();
 
     /*
      * Stops a created thread that is running the run() method. If run() wasn't
@@ -103,14 +116,21 @@ public:
     void stop();
 
     /*
-     * Returns the last error occurred in the recognition started by run().
-     * If no error has yet ocurred, then returns OK.
+     * Returns the last error occurred in the recognition started by run(), which
+     * can be one of the following values:
+     * - OK
+     * - REC_START_ERR
+     * - REC_STOP_ERR
+     * - UTT_START_ERR
+     * - UTT_RESTART_ERR
+     * - AUDIO_READ_ERR
+     * If no thread was previously run, returns OK.
      */
-    SpeechRecognizerErr get_run_error();
+    Error get_run_error();
 
     /*
      * Resets the variable that stores the last error ocurred in the recognition
-     * started by the run() method, setting its value to SpeechRecognizerErr OK.
+     * started by the run() method, setting its value to Error OK.
      */
     void reset_run_error();
 

@@ -16,7 +16,7 @@ static arg_t cont_args_def[] = {
     CMDLN_EMPTY_OPTION
 };
 
-SpeechRecognizerErr SpeechRecognizer::config(String hmm_dirname,
+SpeechRecognizer::Error SpeechRecognizer::config(String hmm_dirname,
                               String dict_filename,
                               String kws_filename) {
     this->hmm_dirname = hmm_dirname;
@@ -86,7 +86,7 @@ SpeechRecognizerErr SpeechRecognizer::config(String hmm_dirname,
     return OK;
 }
 
-SpeechRecognizerErr SpeechRecognizer::run() {
+SpeechRecognizer::Error SpeechRecognizer::run() {
     if (conf == NULL || recorder == NULL || decoder == NULL)
         return NO_CONFIG_ERR;
 
@@ -95,6 +95,10 @@ SpeechRecognizerErr SpeechRecognizer::run() {
     recognition = Thread::create(SpeechRecognizer::thread_recognize, this);
 
     return OK;
+}
+
+bool SpeechRecognizer::running() {
+    return is_running;
 }
 
 void SpeechRecognizer::stop() {
@@ -106,8 +110,8 @@ void SpeechRecognizer::stop() {
     }
 }
 
-void SpeechRecognizer::thread_recognize(void *s) {
-    SpeechRecognizer *self = (SpeechRecognizer *) s;
+void SpeechRecognizer::thread_recognize(void *sr) {
+    SpeechRecognizer *self = (SpeechRecognizer *) sr;
     self->recognize();
 }
 
@@ -169,7 +173,7 @@ void SpeechRecognizer::recognize() {
         running_err = REC_STOP_ERR;
 }
 
-SpeechRecognizerErr SpeechRecognizer::get_run_error() {
+SpeechRecognizer::Error SpeechRecognizer::get_run_error() {
     return running_err;
 }
 
@@ -178,9 +182,8 @@ void SpeechRecognizer::reset_run_error() {
 }
 
 String SpeechRecognizer::buffer_get() {
-    // TODO: Return some kind of NULL
-    if (kws_buffer.size() == 0)
-        throw "Can't get keyword from an empty buffer";
+    if (buffer_empty())
+        return String("");
 
     String keyword = kws_buffer.get(0);
     kws_buffer.remove(0);
@@ -226,6 +229,7 @@ void SpeechRecognizer::set_kws_buffer_cap(int kws_buffer_cap) {
 void SpeechRecognizer::_bind_methods() {
     ObjectTypeDB::bind_method("config", &SpeechRecognizer::config);
     ObjectTypeDB::bind_method("run", &SpeechRecognizer::run);
+    ObjectTypeDB::bind_method("running", &SpeechRecognizer::running);
     ObjectTypeDB::bind_method("stop", &SpeechRecognizer::stop);
 
     ObjectTypeDB::bind_method("get_run_error", &SpeechRecognizer::get_run_error);
