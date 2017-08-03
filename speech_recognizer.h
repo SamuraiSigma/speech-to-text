@@ -64,7 +64,7 @@ private:
      * Thread wrapper function, calls recognize() method of its SpeechRecognizer
      * argument.
      */
-    static void thread_recognize(void *speech_recog);
+    static void thread_recognize(void *sr);
 
     /*
      * Repeatedly listens to keywords from the user's microphone input.
@@ -103,6 +103,11 @@ public:
      * - NO_CONFIG_ERR
      */
     Error run();
+
+    /*
+     * Returns true if the speech recognition thread is active, or false otherwise.
+     */
+    bool running();
 
     /*
      * Stops a created thread that is running the run() method. If run() wasn't

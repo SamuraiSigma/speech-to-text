@@ -97,6 +97,10 @@ SpeechRecognizer::Error SpeechRecognizer::run() {
     return OK;
 }
 
+bool SpeechRecognizer::running() {
+    return is_running;
+}
+
 void SpeechRecognizer::stop() {
     if (recognition != NULL) {
         is_running = false;
@@ -106,8 +110,8 @@ void SpeechRecognizer::stop() {
     }
 }
 
-void SpeechRecognizer::thread_recognize(void *s) {
-    SpeechRecognizer *self = (SpeechRecognizer *) s;
+void SpeechRecognizer::thread_recognize(void *sr) {
+    SpeechRecognizer *self = (SpeechRecognizer *) sr;
     self->recognize();
 }
 
@@ -226,6 +230,7 @@ void SpeechRecognizer::set_kws_buffer_cap(int kws_buffer_cap) {
 void SpeechRecognizer::_bind_methods() {
     ObjectTypeDB::bind_method("config", &SpeechRecognizer::config);
     ObjectTypeDB::bind_method("run", &SpeechRecognizer::run);
+    ObjectTypeDB::bind_method("running", &SpeechRecognizer::running);
     ObjectTypeDB::bind_method("stop", &SpeechRecognizer::stop);
 
     ObjectTypeDB::bind_method("get_run_error", &SpeechRecognizer::get_run_error);
