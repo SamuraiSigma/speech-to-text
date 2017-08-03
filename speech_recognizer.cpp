@@ -182,9 +182,8 @@ void SpeechRecognizer::reset_run_error() {
 }
 
 String SpeechRecognizer::buffer_get() {
-    // TODO: Return some kind of NULL
-    if (kws_buffer.size() == 0)
-        throw "Can't get keyword from an empty buffer";
+    if (buffer_empty())
+        return String("");
 
     String keyword = kws_buffer.get(0);
     kws_buffer.remove(0);
