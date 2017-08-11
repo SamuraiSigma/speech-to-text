@@ -145,13 +145,10 @@ if ARGUMENTS.get('speech_recognizer_shared', 'no') == 'yes':
     shared_lib = module_env.SharedLibrary(target='#bin/speech_recognizer',
                                           source=all_sources)
 
-    # Necessary to create the shared library
-    env.Append(LIBS=[shared_lib])
-
     # Notify main env of new library dependency
     shared_lib_shim = shared_lib[0].name.rsplit('.', 1)[0]
-    env.Append(LIBS=[shared_lib_shim])
-    env.Append(LIBPATH=['#bin'])
+    env.Append(LIBS=shared_lib_shim)
+    env.Append(LIBPATH='#bin')
 else:
     # Static compilation
     module_env.add_source_files(env.modules_sources, sphinxbase_sources)
