@@ -1,6 +1,7 @@
 #include <cstdio>               // printf(), fprintf()
 #include "speech_recognizer.h"
 #include "core/os/memory.h"     // memalloc(), memfree(), memdelete()
+#include "globals.h"            // Globals::get_singleton()->localize_path()
 
 /*
  * Adds the -adcdev option as a possible command line argument.
@@ -19,9 +20,9 @@ static arg_t cont_args_def[] = {
 SpeechRecognizer::Error SpeechRecognizer::config(String hmm_dirname,
                               String dict_filename,
                               String kws_filename) {
-    this->hmm_dirname = hmm_dirname;
+    this->hmm_dirname   = hmm_dirname;
     this->dict_filename = dict_filename;
-    this->kws_filename = kws_filename;
+    this->kws_filename  = kws_filename;
 
     String names[3];
     names[0] = hmm_dirname;
@@ -29,12 +30,12 @@ SpeechRecognizer::Error SpeechRecognizer::config(String hmm_dirname,
     names[2] = kws_filename;
 
     char *convert[3];
-    hmm = convert[0];
-    dict = convert[1];
-    kws = convert[2];
 
     // Convert each filename: String -> wchar_t * -> char *
     for (int i = 0; i < 3; i++) {
+        // Get path without "res://" stuff
+        names[i] = Globals::get_singleton()->globalize_path(names[i]);
+
         int len = wcstombs(NULL, names[i].c_str(), 0);
         if (len == -1)
             return MULTIBYTE_STR_ERR;
@@ -50,11 +51,15 @@ SpeechRecognizer::Error SpeechRecognizer::config(String hmm_dirname,
         #endif
     }
 
+    hmm  = convert[0];
+    dict = convert[1];
+    kws  = convert[2];
+
     // Create configuration variable
     conf = cmd_ln_init(NULL, ps_args(), TRUE,
-                        "-hmm", convert[0],
-                        "-dict", convert[1],
-                        "-kws", convert[2],
+                        "-hmm", hmm,
+                        "-dict", dict,
+                        "-kws", kws,
                         NULL);
 
     if (conf == NULL)
@@ -265,7 +270,7 @@ SpeechRecognizer::SpeechRecognizer() {
     hmm = NULL; dict = NULL; kws = NULL;
 
     recognition = NULL;
-    is_running = false;
+    is_running  = false;
     running_err = OK;
 
     rec_buffer_size = DEFAULT_REC_BUFFER_SIZE;
@@ -283,7 +288,7 @@ SpeechRecognizer::~SpeechRecognizer() {
     if (decoder  != NULL) ps_free(decoder);
     if (conf     != NULL) cmd_ln_free_r(conf);
 
-    if (hmm != NULL)  memfree(hmm);
+    if (hmm  != NULL) memfree(hmm);
     if (dict != NULL) memfree(dict);
-    if (kws != NULL)  memfree(kws);
+    if (kws  != NULL) memfree(kws);
 }
