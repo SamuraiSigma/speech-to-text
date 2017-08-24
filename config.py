@@ -1,5 +1,6 @@
 def can_build(platform):
-    return True
+    return platform == "x11"
+
 
 def configure(env):
     pass
