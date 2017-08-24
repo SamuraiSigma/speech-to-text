@@ -13,7 +13,9 @@ module_env.Append(CFLAGS=['-O2', '-Wall', '-Wno-unused-result', '-DHAVE_CONFIG_H
 
 local_sources = [
     "register_types.cpp",
-    "speech_recognizer.cpp"
+    "sr_config.cpp",
+    "sr_queue.cpp",
+    "sr_runner.cpp"
 ]
 
 # ---------------------------------------------------------------------
