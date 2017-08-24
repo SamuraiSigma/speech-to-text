@@ -1,5 +1,6 @@
 #include <cstdio>       // printf(), fprintf()
 #include "sr_runner.h"
+#include "sr_error.h"
 
 void SRRunner::start(Ref<SRConfig> config, Ref<SRQueue> queue) {
     if (is_running)
@@ -42,21 +43,26 @@ void SRRunner::_recognize() {
     // Start recording
     if (ad_start_rec(recorder) < 0) {
         is_running = false;
-        last_err = SRError::REC_START_ERR;
+        emit_signal(SR_RUNNER_END_SIGNAL, SRError::REC_START_ERR);
+        return;
     }
 
     // Start utterance
     if (ps_start_utt(decoder) < 0) {
         is_running = false;
-        last_err = SRError::UTT_START_ERR;
+        ad_stop_rec(recorder);
+        emit_signal(SR_RUNNER_END_SIGNAL, SRError::UTT_START_ERR);
+        return;
     }
 
     while (is_running) {
         // Read data from microphone
         if ((n = ad_read(recorder, buffer, current_buffer_size)) < 0) {
             is_running = false;
-            last_err = SRError::AUDIO_READ_ERR;
-            break;
+            ad_stop_rec(recorder);
+            ps_end_utt(decoder);
+            emit_signal(SR_RUNNER_END_SIGNAL, SRError::AUDIO_READ_ERR);
+            return;
         }
 
         // Process captured sound
@@ -81,23 +87,17 @@ void SRRunner::_recognize() {
             ps_end_utt(decoder);
             if (ps_start_utt(decoder) < 0) {
                 is_running = false;
-                last_err = SRError::UTT_RESTART_ERR;
-                break;
+                ad_stop_rec(recorder);
+                ps_end_utt(decoder);
+                emit_signal(SR_RUNNER_END_SIGNAL, SRError::UTT_RESTART_ERR);
+                return;
             }
         }
     }
 
     // Stop recording
     if (ad_stop_rec(recorder) < 0)
-        last_err = SRError::REC_STOP_ERR;
-}
-
-SRError::Error SRRunner::get_last_error() {
-    return last_err;
-}
-
-void SRRunner::reset_last_error() {
-    last_err = SRError::OK;
+        emit_signal(SR_RUNNER_END_SIGNAL, SRError::REC_STOP_ERR);
 }
 
 void SRRunner::_bind_methods() {
@@ -105,14 +105,13 @@ void SRRunner::_bind_methods() {
     ObjectTypeDB::bind_method("running", &SRRunner::running);
     ObjectTypeDB::bind_method("stop",    &SRRunner::stop);
 
-    ObjectTypeDB::bind_method("get_last_error",   &SRRunner::get_last_error);
-    ObjectTypeDB::bind_method("reset_last_error", &SRRunner::reset_last_error);
+    ADD_SIGNAL(MethodInfo(SR_RUNNER_END_SIGNAL,
+               PropertyInfo(Variant::INT, "error number")));
 }
 
 SRRunner::SRRunner() {
     recognition = NULL;
     is_running = false;
-    last_err = SRError::OK;
 }
 
 SRRunner::~SRRunner() {

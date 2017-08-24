@@ -6,7 +6,9 @@
 
 #include "sr_config.h"
 #include "sr_queue.h"
-#include "sr_error.h"
+
+// Signal emitted when speech recognition thread has ended
+#define SR_RUNNER_END_SIGNAL "speech_recognition_end"
 
 class SRRunner : public Node {
     OBJ_TYPE(SRRunner, Node);
@@ -17,10 +19,6 @@ private:
 
     Ref<SRConfig> config;  // Configuration object containing recognition variables
     Ref<SRQueue> queue;    // Queue for storing recognized keywords
-
-    // Stores the last error occurred in the speech recognition thread (if no error
-    // has yet ocurred, then its value is OK)
-    SRError::Error last_err;
 
     /*
      * Thread wrapper function, calls _recognize() method of its SRRunner
@@ -44,6 +42,16 @@ public:
      * Creates a thread to repeatedly listen to keywords. The thread can be stopped
      * with the stop() method. If start() was previously called, the current thread
      * is halted and a new recognition, with the specified arguments, is created.
+     *
+     * Note: The signal SR_RUNNER_END_SIGNAL is emitted when the thread ends. It
+     * contains an SRError::Error argument representing what made it stop, which can
+     * be one of the following values:
+     * - OK
+     * - REC_START_ERR
+     * - REC_STOP_ERR
+     * - UTT_START_ERR
+     * - UTT_RESTART_ERR
+     * - AUDIO_READ_ERR
      */
     void start(Ref<SRConfig> config, Ref<SRQueue> queue);
 
@@ -57,25 +65,6 @@ public:
      * called previously, this function does nothing.
      */
     void stop();
-
-    /*
-     * Returns the last error occurred in the recognition started by run(), which
-     * can be one of the following values:
-     * - OK
-     * - REC_START_ERR
-     * - REC_STOP_ERR
-     * - UTT_START_ERR
-     * - UTT_RESTART_ERR
-     * - AUDIO_READ_ERR
-     * If no thread was previously run, returns OK.
-     */
-    SRError::Error get_last_error();
-
-    /*
-     * Resets the variable that stores the last error ocurred in the recognition
-     * started by the run() method, setting its value to SRError::OK.
-     */
-    void reset_last_error();
 
     /*
      * Initializes speech recognizer variables.
