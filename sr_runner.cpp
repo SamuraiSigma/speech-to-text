@@ -1,4 +1,3 @@
-#include <cstdio>       // printf(), fprintf()
 #include "sr_runner.h"
 #include "sr_error.h"
 
@@ -43,6 +42,7 @@ void SRRunner::_recognize() {
     // Start recording
     if (ad_start_rec(recorder) < 0) {
         is_running = false;
+        SRERR_PRINTS(SRError::REC_START_ERR);
         emit_signal(SR_RUNNER_END_SIGNAL, SRError::REC_START_ERR);
         return;
     }
@@ -51,6 +51,7 @@ void SRRunner::_recognize() {
     if (ps_start_utt(decoder) < 0) {
         is_running = false;
         ad_stop_rec(recorder);
+        SRERR_PRINTS(SRError::UTT_START_ERR);
         emit_signal(SR_RUNNER_END_SIGNAL, SRError::UTT_START_ERR);
         return;
     }
@@ -61,6 +62,7 @@ void SRRunner::_recognize() {
             is_running = false;
             ad_stop_rec(recorder);
             ps_end_utt(decoder);
+            SRERR_PRINTS(SRError::AUDIO_READ_ERR);
             emit_signal(SR_RUNNER_END_SIGNAL, SRError::AUDIO_READ_ERR);
             return;
         }
@@ -74,14 +76,11 @@ void SRRunner::_recognize() {
             // Add new keyword to queue, if possible
             if (queue->add(String(hyp))) {
                 #ifdef DEBUG_ENABLED
-                    printf("[SpeechRecognizer] %s\n", hyp);
+                    print_line("[SpeechRecognizer] " + String(hyp));
                 #endif
             }
-            else {
-                fprintf(stderr,
-                        "Warning: SpeechRecognizer buffer is full! Cannot store "
-                        "more keywords!\n");
-            }
+            else
+                WARN_PRINT("Cannot store more keywords in the SRQueue!");
 
             // Restart decoder
             ps_end_utt(decoder);
@@ -89,6 +88,7 @@ void SRRunner::_recognize() {
                 is_running = false;
                 ad_stop_rec(recorder);
                 ps_end_utt(decoder);
+                SRERR_PRINTS(SRError::UTT_RESTART_ERR);
                 emit_signal(SR_RUNNER_END_SIGNAL, SRError::UTT_RESTART_ERR);
                 return;
             }
@@ -96,8 +96,10 @@ void SRRunner::_recognize() {
     }
 
     // Stop recording
-    if (ad_stop_rec(recorder) < 0)
+    if (ad_stop_rec(recorder) < 0) {
+        SRERR_PRINTS(SRError::REC_STOP_ERR);
         emit_signal(SR_RUNNER_END_SIGNAL, SRError::REC_STOP_ERR);
+    }
 }
 
 void SRRunner::_bind_methods() {

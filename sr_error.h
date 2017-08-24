@@ -3,6 +3,9 @@
 
 #include "core/ustring.h"
 
+// Shortcut for printing SRError::Error values with ERR_PRINT()
+#define SRERR_PRINTS(err) ERR_PRINTS(SRError::get_error_string(err));
+
 class SRError {
 
 public:
@@ -24,7 +27,6 @@ public:
         AUDIO_READ_ERR       // Error while reading data from recorder
     };
 
-private:
     /*
      * Returns a short String explaining the given Error value.
      */

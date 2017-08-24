@@ -1,9 +1,8 @@
-#include <cstdio>
 #include "sr_queue.h"
 
 String SRQueue::get() {
     if (empty()) {
-        fprintf(stderr, "Warning: Empty keywords buffer, returning empty String!\n");
+        WARN_PRINT("Empty keywords buffer, returning empty String");
         return String("");
     }
 
@@ -38,7 +37,7 @@ int SRQueue::get_capacity() {
 
 void SRQueue::set_capacity(int capacity) {
     if (capacity <= 0) {
-        fprintf(stderr, "Keywords buffer capacity must be greater than 0\n");
+        ERR_PRINT("Keywords buffer capacity must be greater than 0");
         return;
     }
     this->capacity = capacity;

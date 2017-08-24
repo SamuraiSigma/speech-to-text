@@ -1,4 +1,3 @@
-#include <cstdio>            // printf(), fprintf()
 #include "sr_config.h"
 #include "core/os/memory.h"  // memalloc(), memfree(), memdelete()
 #include "core/globals.h"    // Globals::get_singleton()->globalize_path()
@@ -36,17 +35,21 @@ SRError::Error SRConfig::init(String hmm_dirname, String dict_filename,
         names[i] = Globals::get_singleton()->globalize_path(names[i]);
 
         int len = wcstombs(NULL, names[i].c_str(), 0);
-        if (len == -1)
+        if (len == -1) {
+            SRERR_PRINTS(SRError::MULTIBYTE_STR_ERR);
             return SRError::MULTIBYTE_STR_ERR;
+        }
 
         convert[i] = (char *) memalloc((len + 1) * sizeof(char));
-        if (convert[i] == NULL)
+        if (convert[i] == NULL) {
+            SRERR_PRINTS(SRError::MEMALLOC_ERR);
             return SRError::MEMALLOC_ERR;
+        }
 
         wcstombs(convert[i], names[i].c_str(), len + 1);
 
         #ifdef DEBUG_ENABLED
-            printf("[SpeechRecognizer Argument] %s\n", convert[i]);
+            print_line("[SpeechRecognizer Argument] " + String(convert[i]));
         #endif
     }
 
@@ -61,13 +64,17 @@ SRError::Error SRConfig::init(String hmm_dirname, String dict_filename,
                         "-kws", kws,
                         NULL);
 
-    if (conf == NULL)
+    if (conf == NULL) {
+        SRERR_PRINTS(SRError::CONFIG_CREATE_ERR);
         return SRError::CONFIG_CREATE_ERR;
+    }
 
     // Update basic configuration with custom one for mic
     conf = cmd_ln_init(conf, cont_args_def, TRUE, NULL);
-    if (conf == NULL)
+    if (conf == NULL) {
+        SRERR_PRINTS(SRError::CONFIG_CREATE_ERR);
         return SRError::CONFIG_CREATE_ERR;
+    }
 
     // Create recorder variable
     recorder = ad_open_dev(cmd_ln_str_r(conf, "-adcdev"),
@@ -75,6 +82,7 @@ SRError::Error SRConfig::init(String hmm_dirname, String dict_filename,
 
     if (recorder == NULL) {
         cmd_ln_free_r(conf);
+        SRERR_PRINTS(SRError::REC_CREATE_ERR);
         return SRError::REC_CREATE_ERR;
     }
 
@@ -84,6 +92,7 @@ SRError::Error SRConfig::init(String hmm_dirname, String dict_filename,
     if (decoder == NULL) {
         cmd_ln_free_r(conf);
         ad_close(recorder);
+        SRERR_PRINTS(SRError::DECODER_CREATE_ERR);
         return SRError::DECODER_CREATE_ERR;
     }
 
