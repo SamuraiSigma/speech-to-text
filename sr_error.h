@@ -1,6 +1,8 @@
 #ifndef SR_ERROR_H
 #define SR_ERROR_H
 
+#include "core/ustring.h"
+
 class SRError {
 
 public:
@@ -21,6 +23,12 @@ public:
         UTT_RESTART_ERR,     // Couldn't restart utterance during speech recognition
         AUDIO_READ_ERR       // Error while reading data from recorder
     };
+
+private:
+    /*
+     * Returns a short String explaining the given Error value.
+     */
+     static String get_error_string(Error err);
 };
 
 #endif

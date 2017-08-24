@@ -15,7 +15,8 @@ local_sources = [
     "register_types.cpp",
     "sr_config.cpp",
     "sr_queue.cpp",
-    "sr_runner.cpp"
+    "sr_runner.cpp",
+    "sr_error.cpp"
 ]
 
 # ---------------------------------------------------------------------
