@@ -18,8 +18,8 @@ private:
     Ref<SRConfig> config;  // Configuration object containing recognition variables
     Ref<SRQueue> queue;    // Queue for storing recognized keywords
 
-    // Stores the last error occurred in the recognition started by the run() method
-    // (if no error has yet ocurred, then its value is OK)
+    // Stores the last error occurred in the speech recognition thread (if no error
+    // has yet ocurred, then its value is OK)
     SRError::Error last_err;
 
     /*
@@ -41,12 +41,9 @@ protected:
 
 public:
     /*
-     * Creates a thread to repeatedly listen to keywords. Must call config()
-     * first, or it will fail. The thread can be stopped with the stop() method.
-     *
-     * Returns one of the following Error values:
-     * - OK
-     * - NO_CONFIG_ERR
+     * Creates a thread to repeatedly listen to keywords. The thread can be stopped
+     * with the stop() method. If start() was previously called, the current thread
+     * is halted and a new recognition, with the specified arguments, is created.
      */
     void start(Ref<SRConfig> config, Ref<SRQueue> queue);
 

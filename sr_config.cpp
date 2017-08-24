@@ -1,7 +1,7 @@
 #include <cstdio>            // printf(), fprintf()
 #include "sr_config.h"
 #include "core/os/memory.h"  // memalloc(), memfree(), memdelete()
-#include "core/globals.h"    // Globals::get_singleton()->localize_path()
+#include "core/globals.h"    // Globals::get_singleton()->globalize_path()
 
 /*
  * Adds the -adcdev option as a possible command line argument.

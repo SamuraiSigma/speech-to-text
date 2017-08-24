@@ -47,7 +47,7 @@ public:
      * - MULTIBYTE_STR_ERR
      * - MEMALLOC_ERR
      * - CONFIG_CREATE_ERR
-     * - AUDIO_DEV_OPEN_ERR
+     * - REC_CREATE_ERR
      * - DECODER_CREATE_ERR
      */
     SRError::Error init(String hmm_dirname, String dict_filename,

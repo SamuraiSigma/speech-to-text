@@ -2,6 +2,9 @@
 #include "sr_runner.h"
 
 void SRRunner::start(Ref<SRConfig> config, Ref<SRQueue> queue) {
+    if (is_running)
+        stop();
+
     this->config = config;
     this->queue = queue;
 
