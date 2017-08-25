@@ -75,23 +75,25 @@ base_srcs = [
     "libsphinxbase/lm/jsgf.c",
     "libsphinxbase/lm/ngram_model_trie.c",
     "libsphinxbase/lm/ngrams_raw.c",
-    "libsphinxbase/lm/jsgf_scanner.c",
-    "libsphinxad/ad_pulse.c"
-    # TODO: Check system to know which of the below files should be used
-    # "libsphinxad/ad_oss.c",
-    # "libsphinxad/ad_win32.c",
-    # "libsphinxad/ad_openal.c",
-    # "libsphinxad/ad_alsa.c",
-    # "libsphinxad/ad_base.c"
+    "libsphinxbase/lm/jsgf_scanner.c"
 ]
+
+# Use Pulseaudio or Alsa as sound driver
+if (env["pulseaudio"] == "yes"):
+    base_srcs.append("libsphinxad/ad_pulse.c")
+elif os.system("pkg-config --exists alsa") == 0:
+    base_srcs.append("libsphinxad/ad_alsa.c")
+else:
+    print("[Speech Recognizer] Error: No PulseAudio or ALSA support found!")
+    Exit(1)
 
 # Add path to Sphinxbase include/ folder
 base_inc_paths = [
     "include",
     "include/android",
     "include/sphinxbase",
-    "include/win32"
-    # "include/wince"
+    "include/win32",
+    "include/wince"
 ]
 
 base_srcs = [base_dir + "/src/" + file for file in base_srcs]

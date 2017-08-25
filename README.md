@@ -16,8 +16,6 @@ Files extracted from upstream source:
 - `include/*`, except from: `Makefile.*`, `config.h.in`, `sphinx_config.h.in`
 - LICENSE
 
-(**TODO: Check which include files are actually used in source files**)
-
 
 ## pocketsphinx
 
