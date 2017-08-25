@@ -76,7 +76,7 @@ void SRRunner::_recognize() {
 			// Add new keyword to queue, if possible
 			if (queue->add(String(hyp))) {
 #ifdef DEBUG_ENABLED
-				print_line("[SpeechRecognizer] " + String(hyp));
+				print_line("[SRRunner] " + String(hyp));
 #endif
 			}
 			else

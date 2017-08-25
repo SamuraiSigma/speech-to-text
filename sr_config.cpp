@@ -51,7 +51,7 @@ SRError::Error SRConfig::init(String hmm_dirname, String dict_filename,
 		wcstombs(convert[i], names[i].c_str(), len + 1);
 
 #ifdef DEBUG_ENABLED
-		print_line("[SpeechRecognizer Argument] " + String(convert[i]));
+		print_line("[SRConfig Argument] " + String(convert[i]));
 #endif
 	}
 
@@ -115,7 +115,7 @@ int SRConfig::get_rec_buffer_size() {
 
 void SRConfig::set_rec_buffer_size(int rec_buffer_size) {
 	if (rec_buffer_size <= 0) {
-		fprintf(stderr, "Microphone recorder buffer size must be greater than 0\n");
+		ERR_PRINT("Microphone recorder buffer size must be greater than 0");
 		return;
 	}
 	this->rec_buffer_size = rec_buffer_size;
