@@ -5,13 +5,13 @@ Import('env')
 
 module_env = env.Clone()
 
-# -DHAVE_CONFIG_H allows compiling of libsphinxbase/util source files (this
-# flag was found when running a Makefile in the same directory)
-module_env.Append(CFLAGS=['-O2', '-Wall', '-Wno-unused-result', '-DHAVE_CONFIG_H'])
+# -DHAVE_CONFIG_H allows compiling of libsphinxbase/util source files
+module_flags = ['-O2', '-Wall', '-Wno-unused-result', '-DHAVE_CONFIG_H']
+module_env.Append(CFLAGS=module_flags)
 
 # ---------------------------------------------------------------------
 
-local_sources = [
+sr_srcs = [
     "register_types.cpp",
     "sr_config.cpp",
     "sr_queue.cpp",
@@ -22,9 +22,9 @@ local_sources = [
 # ---------------------------------------------------------------------
 
 # Sphinxbase source files
-sphinxbase_dir = "sphinxbase"
+base_dir = "sphinxbase"
 
-sphinxbase_sources = [
+base_srcs = [
     "libsphinxbase/feat/feat.c",
     "libsphinxbase/feat/cmn_live.c",
     "libsphinxbase/feat/lda.c",
@@ -86,7 +86,7 @@ sphinxbase_sources = [
 ]
 
 # Add path to Sphinxbase include/ folder
-sphinxbase_include_paths = [
+base_inc_paths = [
     "include",
     "include/android",
     "include/sphinxbase",
@@ -94,15 +94,15 @@ sphinxbase_include_paths = [
     # "include/wince"
 ]
 
-sphinxbase_sources = [sphinxbase_dir + "/src/" + file for file in sphinxbase_sources]
-module_env.Append(CPPPATH=[sphinxbase_dir + "/" + dir for dir in sphinxbase_include_paths])
+base_srcs = [base_dir + "/src/" + file for file in base_srcs]
+module_env.Append(CPPPATH=[base_dir + "/" + dir for dir in base_inc_paths])
 
 # ---------------------------------------------------------------------
 
 # Pocketsphinx source files
-pocketsphinx_dir = "pocketsphinx"
+pocket_dir = "pocketsphinx"
 
-pocketsphinx_sources = [
+pocket_srcs = [
     "ptm_mgau.c",
     "kws_detections.c",
     "hmm.c",
@@ -134,19 +134,20 @@ pocketsphinx_sources = [
     "pocketsphinx.c"
 ]
 
-pocketsphinx_sources = [pocketsphinx_dir + "/src/" + file for file in pocketsphinx_sources]
-module_env.Append(CPPPATH=pocketsphinx_dir + "/" + "include")
+pocket_srcs = [pocket_dir + "/src/" + file for file in pocket_srcs]
+module_env.Append(CPPPATH=pocket_dir + "/" + "include")
 
 # ---------------------------------------------------------------------
+
+all_srcs = base_srcs + pocket_srcs + sr_srcs
 
 if ARGUMENTS.get('speech_recognizer_shared', 'no') == 'yes':
     # Shared lib compilation
     module_env.Append(CXXFLAGS='-fPIC')  # Shared library flag
     module_env['LIBS'] = []
 
-    all_sources = sphinxbase_sources + pocketsphinx_sources + local_sources
     shared_lib = module_env.SharedLibrary(target='#bin/speech_recognizer',
-                                          source=all_sources)
+                                          source=all_srcs)
 
     # Notify main env of new library dependency
     shared_lib_shim = shared_lib[0].name.rsplit('.', 1)[0]
@@ -154,6 +155,4 @@ if ARGUMENTS.get('speech_recognizer_shared', 'no') == 'yes':
     env.Append(LIBPATH='#bin')
 else:
     # Static compilation
-    module_env.add_source_files(env.modules_sources, sphinxbase_sources)
-    module_env.add_source_files(env.modules_sources, pocketsphinx_sources)
-    module_env.add_source_files(env.modules_sources, local_sources)
+    module_env.add_source_files(env.modules_sources, all_srcs)
