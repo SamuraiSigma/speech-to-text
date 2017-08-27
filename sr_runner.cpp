@@ -1,8 +1,9 @@
 #include "sr_runner.h"
 #include "sr_error.h"
+#include "core/os/memory.h"  // memnew(), memdelete()
 
 void SRRunner::start() {
-	ERR_FAIL_COND(config.is_null() || queue.is_null());
+	ERR_FAIL_COND(config.is_null());
 
 	if (is_running) stop();
 	is_running = true;
@@ -99,11 +100,23 @@ void SRRunner::_recognize() {
 }
 
 void SRRunner::set_config(const Ref<SRConfig> &p_config) {
+	stop();
 	config = p_config;
 }
 
 Ref<SRConfig> SRRunner::get_config() const {
 	return config;
+}
+
+Ref<SRQueue> SRRunner::get_queue() const {
+	return queue;
+}
+
+void SRRunner::reset_queue() {
+	stop();
+	int old_capacity = queue->get_capacity();
+	queue = memnew(SRQueue);
+	queue->set_capacity(old_capacity);
 }
 
 void SRRunner::set_rec_buffer_size(int rec_buffer_size) {
@@ -119,30 +132,50 @@ int SRRunner::get_rec_buffer_size() {
 	return rec_buffer_size;
 }
 
+void SRRunner::set_queue_capacity(int capacity) {
+	queue->set_capacity(capacity);
+}
+
+int SRRunner::get_queue_capacity() {
+	return queue->get_capacity();
+}
+
 void SRRunner::_bind_methods() {
 	ObjectTypeDB::bind_method("start",   &SRRunner::start);
 	ObjectTypeDB::bind_method("running", &SRRunner::running);
 	ObjectTypeDB::bind_method("stop",    &SRRunner::stop);
 
-	ObjectTypeDB::bind_method("set_config", &SRRunner::set_config);
-	ObjectTypeDB::bind_method("get_config", &SRRunner::get_config);
+	ObjectTypeDB::bind_method("set_config",  &SRRunner::set_config);
+	ObjectTypeDB::bind_method("get_config",  &SRRunner::get_config);
+	ObjectTypeDB::bind_method("get_queue",   &SRRunner::get_queue);
+	ObjectTypeDB::bind_method("reset_queue", &SRRunner::reset_queue);
 
 	ObjectTypeDB::bind_method("set_rec_buffer_size", &SRRunner::set_rec_buffer_size);
 	ObjectTypeDB::bind_method("get_rec_buffer_size", &SRRunner::get_rec_buffer_size);
+    ObjectTypeDB::bind_method("set_queue_capacity",  &SRRunner::set_queue_capacity);
+	ObjectTypeDB::bind_method("get_queue_capacity",  &SRRunner::get_queue_capacity);
+
+	BIND_CONSTANT(DEFAULT_REC_BUFFER_SIZE);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "config",
 	                          PROPERTY_HINT_RESOURCE_TYPE, "SRConfig"),
 	             _SCS("set_config"), _SCS("get_config"));
-
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "recorder buffer size",
 	                          PROPERTY_HINT_RANGE, "256,4096,32"),
 	             _SCS("set_rec_buffer_size"), _SCS("get_rec_buffer_size"));
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "keywords queue capacity",
+	                          PROPERTY_HINT_RANGE, "1,500,1"),
+	                          _SCS("set_queue_capacity"),
+	                          _SCS("get_queue_capacity"));
 
 	ADD_SIGNAL(MethodInfo(SR_RUNNER_END_SIGNAL,
 	                      PropertyInfo(Variant::INT, "error number")));
 }
 
 SRRunner::SRRunner() {
+	queue = memnew(SRQueue);
+	// queue is automatically freed when there are no more references to it
+
 	recognition = NULL;
 	is_running = false;
 	rec_buffer_size = DEFAULT_REC_BUFFER_SIZE;

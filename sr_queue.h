@@ -5,7 +5,7 @@
 #include "core/vector.h"
 
 // Default capacity for the keywords queue
-#define DEFAULT_KWS_CAPACITY 200
+#define DEFAULT_KWS_CAPACITY 100
 
 class SRQueue : public Reference {
 	OBJ_TYPE(SRQueue, Reference);
@@ -30,6 +30,10 @@ public:
 	 */
 	String get();
 
+	/*
+	 * Adds the specified keyword to the end of the queue, returning true if
+	 * successful.
+	 */
 	bool add(String kw);
 
 	/*
@@ -48,14 +52,16 @@ public:
 	void clear();
 
 	/*
+	 * Sets the keywords queue capacity as the specified value. Must be >= 0. If
+	 * the new capacity exceeds the current number of elements in the queue, a
+	 * warning message is printed, but no further actions are made.
+	 */
+	void set_capacity(int capacity);
+
+	/*
 	 * Returns the keywords queue capacity.
 	 */
 	int get_capacity();
-
-	/*
-	 * Sets the keywords queue capacity as the specified value. Must be >= 0.
-	 */
-	void set_capacity(int capacity);
 
 	/*
 	 * Initializes queue capacity.

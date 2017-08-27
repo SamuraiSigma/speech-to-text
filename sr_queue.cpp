@@ -2,7 +2,7 @@
 
 String SRQueue::get() {
 	if (empty()) {
-		WARN_PRINT("Empty keywords buffer, returning empty String");
+		WARN_PRINT("Empty keywords queue, returning empty String");
 		return String("");
 	}
 
@@ -31,16 +31,18 @@ void SRQueue::clear() {
 	keywords.clear();
 }
 
-int SRQueue::get_capacity() {
-	return capacity;
-}
-
 void SRQueue::set_capacity(int capacity) {
 	if (capacity <= 0) {
-		ERR_PRINT("Keywords buffer capacity must be greater than 0");
+		ERR_PRINT("Keywords queue capacity must be greater than 0");
 		return;
 	}
 	this->capacity = capacity;
+	if (size() > capacity)
+		WARN_PRINT("New capacity exceeds current number of keywords in buffer");
+}
+
+int SRQueue::get_capacity() {
+	return capacity;
 }
 
 void SRQueue::_bind_methods() {
@@ -50,8 +52,10 @@ void SRQueue::_bind_methods() {
 	ObjectTypeDB::bind_method("empty", &SRQueue::empty);
 	ObjectTypeDB::bind_method("clear", &SRQueue::clear);
 
-	ObjectTypeDB::bind_method("get_capacity", &SRQueue::get_capacity);
 	ObjectTypeDB::bind_method("set_capacity", &SRQueue::set_capacity);
+	ObjectTypeDB::bind_method("get_capacity", &SRQueue::get_capacity);
+
+	BIND_CONSTANT(DEFAULT_KWS_CAPACITY);
 }
 
 SRQueue::SRQueue() {

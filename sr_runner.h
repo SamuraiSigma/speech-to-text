@@ -21,7 +21,7 @@ private:
 	bool is_running;      // If true, speech recognition loop is currently on
 
 	Ref<SRConfig> config;  // Configuration object containing recognition variables
-	Ref<SRQueue> queue;    // Queue for storing recognized keywords
+	SRQueue *queue;        // Queue for storing recognized keywords
 
 	// Microphone recorder buffer size
 	int rec_buffer_size;
@@ -36,6 +36,16 @@ private:
 	 * Repeatedly listens to keywords from the user's microphone input.
 	 */
 	void _recognize();
+
+	/*
+	 * Sets the keywords queue's maximum capacity.
+	 */
+	void set_queue_capacity(int capacity);
+
+	/*
+	 * Returns the keywords queue's current maximum capacity.
+	 */
+	int get_queue_capacity();
 
 protected:
 	/*
@@ -73,18 +83,33 @@ public:
 	void stop();
 
 	/*
-	 * Sets the Config object containing recognition variables.
+	 * Sets the SRConfig object containing recognition variables. If the speech
+	 * recognition thread is currently running, it will be stopped.
 	 */
 	void set_config(const Ref<SRConfig> &p_config);
 
 	/*
-	 * Returns the Config object containing recognition variables.
+	 * Returns the SRConfig object containing recognition variables.
 	 */
 	Ref<SRConfig> get_config() const;
 
 	/*
+	 * Returns the SRQueue that stores recognized keywords.
+	 */
+	Ref<SRQueue> get_queue() const;
+
+	/*
+	 * Creates a new SRQueue to be used, with the same capacity as the previous one.
+	 * Note that the reference to the previous SRQueue will still exist, and be
+	 * freed when no more references to it exist. If the speech recognition thread is
+	 * currently running, it will be stopped.
+	 */
+	void reset_queue();
+
+	/*
 	 * Sets the microphone recorder buffer size used for speech recognition as the
-	 * specified value. Must be > 0.
+	 * specified value. Must be > 0. If the speech recognition thread is currently
+	 * running, it will be stopped.
 	 */
 	void set_rec_buffer_size(int rec_buffer_size);
 
@@ -94,7 +119,7 @@ public:
 	int get_rec_buffer_size();
 
 	/*
-	 * Initializes speech recognizer variables.
+	 * Initializes speech recognizer variables. Also creates a keywords queue.
 	 */
 	SRRunner();
 
