@@ -1,7 +1,7 @@
 #ifndef SR_CONFIG_H
 #define SR_CONFIG_H
 
-#include "core/reference.h"
+#include "core/resource.h"
 #include "sr_error.h"
 
 #include "sphinxbase/err.h"
@@ -11,8 +11,8 @@
 // Microphone recorder default buffer size
 #define DEFAULT_REC_BUFFER_SIZE 2048
 
-class SRConfig : public Reference {
-	OBJ_TYPE(SRConfig, Reference);
+class SRConfig : public Resource {
+	OBJ_TYPE(SRConfig, Resource);
 
 private:
 	cmd_ln_t *conf;         // Configuration type for sphinx variables
@@ -37,10 +37,10 @@ protected:
 
 public:
 	/*
-	 * Initializes variables for recognizing speech. Receives a directory containing
-	 * files for the Hidden Markov Model, a dictionary with words from the desired
-	 * language and a keywords file specifying keywords and their threshold values.
-	 * These files must follow Pocketsphinx conventions.
+	 * Initializes variables for recognizing speech. The attributes for HMM
+	 * directory name, dictionary filename and keywords filename must have been
+	 * previously defined with the appropriate setters. Supposes that these files
+	 * and folder follow Pocketsphinx conventions.
 	 *
 	 * Returns one of the following SRError::Error values:
 	 * - OK
@@ -50,8 +50,7 @@ public:
 	 * - REC_CREATE_ERR
 	 * - DECODER_CREATE_ERR
 	 */
-	SRError::Error init(String hmm_dirname, String dict_filename,
-	                    String kws_filename);
+	SRError::Error init();
 
 	/*
 	 * Returns a pointer to a Pocketsphinx ad_rec_t recorder variable, created
@@ -66,15 +65,51 @@ public:
 	ps_decoder_t * get_decoder();
 
 	/*
-	 * Returns the microphone recorder buffer size used for speech recognition.
+	 * Defines the HMM directory name as the specified value. If the directory
+	 * doesn't exist, raises an Error.
 	 */
-	int get_rec_buffer_size();
+	void set_hmm_dirname(String hmm_dirname);
+
+	/*
+	 * Returns the currently defined HMM directory name. If no name has been defined
+	 * yet, returns an empty String ("").
+	 */
+	String get_hmm_dirname();
+
+	/*
+	 * Defines the dictionary filename as the specified value. If the file doesn't
+	 * exist, raises an Error.
+	 */
+	void set_dict_filename(String dict_filename);
+
+	/*
+	 * Returns the currently defined dictionary filename. If no name has been defined
+	 * yet, returns an empty String ("").
+	 */
+	String get_dict_filename();
+
+	/*
+	 * Defines the keywords filename as the specified value. If the file doesn't
+	 * exist, raises an Error.
+	 */
+	void set_kws_filename(String kws_filename);
+
+	/*
+	 * Returns the currently defined keywords filename. If no name has been defined
+	 * yet, returns an empty String ("").
+	 */
+	String get_kws_filename();
 
 	/*
 	 * Sets the microphone recorder buffer size used for speech recognition as the
 	 * specified value. Must be > 0.
 	 */
 	void set_rec_buffer_size(int rec_buffer_size);
+
+	/*
+	 * Returns the microphone recorder buffer size used for speech recognition.
+	 */
+	int get_rec_buffer_size();
 
 	/*
 	 * Initializes attributes.

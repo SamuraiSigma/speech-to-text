@@ -1,6 +1,8 @@
 #include "sr_config.h"
-#include "core/os/memory.h"  // memalloc(), memfree(), memdelete()
-#include "core/globals.h"    // Globals::get_singleton()->globalize_path()
+#include "core/globals.h"         // Globals::get_singleton()->globalize_path()
+#include "core/os/memory.h"       // memalloc(), memfree(), memdelete()
+#include "core/os/dir_access.h"   // DirAccess::create_for_path()->dir_exists()
+#include "core/os/file_access.h"  // FileAccess::create_for_path()->file_exists()
 
 /*
  * Adds the -adcdev option as a possible command line argument.
@@ -18,11 +20,11 @@ static arg_t cont_args_def[] = {
 	CMDLN_EMPTY_OPTION
 };
 
-SRError::Error SRConfig::init(String hmm_dirname, String dict_filename,
-                              String kws_filename) {
-	this->hmm_dirname   = hmm_dirname;
-	this->dict_filename = dict_filename;
-	this->kws_filename  = kws_filename;
+SRError::Error SRConfig::init() {
+	if (hmm_dirname == "" || dict_filename == "" || kws_filename == "") {
+		SRERR_PRINTS(SRError::UNDEF_FILES_ERR);
+		return SRError::UNDEF_FILES_ERR;
+	}
 
 	String names[3];
 	names[0] = hmm_dirname;
@@ -109,8 +111,46 @@ ps_decoder_t * SRConfig::get_decoder() {
 	return decoder;
 }
 
-int SRConfig::get_rec_buffer_size() {
-	return rec_buffer_size;
+void SRConfig::set_hmm_dirname(String hmm_dirname) {
+	DirAccess *d = DirAccess::create_for_path(hmm_dirname);
+	if (d->dir_exists(hmm_dirname))
+		this->hmm_dirname = hmm_dirname;
+	else {
+		String err_msg = String("Directory '" + hmm_dirname + "' not found!");
+		ERR_PRINT(err_msg.utf8().get_data());
+	}
+}
+
+String SRConfig::get_hmm_dirname() {
+	return hmm_dirname;
+}
+
+void SRConfig::set_dict_filename(String dict_filename) {
+	FileAccess *f = FileAccess::create_for_path(dict_filename);
+	if (f->file_exists(dict_filename))
+		this->dict_filename = dict_filename;
+	else {
+		String err_msg = String("File '" + dict_filename + "' not found!");
+		ERR_PRINT(err_msg.utf8().get_data());
+	}
+}
+
+String SRConfig::get_dict_filename() {
+	return dict_filename;
+}
+
+void SRConfig::set_kws_filename(String kws_filename) {
+	FileAccess *f = FileAccess::create_for_path(kws_filename);
+	if (f->file_exists(kws_filename))
+		this->kws_filename = kws_filename;
+	else {
+		String err_msg = String("File '" + kws_filename + "' not found!");
+		ERR_PRINT(err_msg.utf8().get_data());
+	}
+}
+
+String SRConfig::get_kws_filename() {
+	return kws_filename;
 }
 
 void SRConfig::set_rec_buffer_size(int rec_buffer_size) {
@@ -121,13 +161,36 @@ void SRConfig::set_rec_buffer_size(int rec_buffer_size) {
 	this->rec_buffer_size = rec_buffer_size;
 }
 
+int SRConfig::get_rec_buffer_size() {
+	return rec_buffer_size;
+}
+
 void SRConfig::_bind_methods() {
 	ObjectTypeDB::bind_method("init",         &SRConfig::init);
 	ObjectTypeDB::bind_method("get_recorder", &SRConfig::get_recorder);
 	ObjectTypeDB::bind_method("get_decoder",  &SRConfig::get_decoder);
 
-	ObjectTypeDB::bind_method("get_rec_buffer_size", &SRConfig::get_rec_buffer_size);
+	ObjectTypeDB::bind_method("set_hmm_dirname",   &SRConfig::set_hmm_dirname);
+	ObjectTypeDB::bind_method("get_hmm_dirname",   &SRConfig::get_hmm_dirname);
+	ObjectTypeDB::bind_method("set_dict_filename", &SRConfig::set_dict_filename);
+	ObjectTypeDB::bind_method("get_dict_filename", &SRConfig::get_dict_filename);
+	ObjectTypeDB::bind_method("set_kws_filename",  &SRConfig::set_kws_filename);
+	ObjectTypeDB::bind_method("get_kws_filename",  &SRConfig::get_kws_filename);
+
 	ObjectTypeDB::bind_method("set_rec_buffer_size", &SRConfig::set_rec_buffer_size);
+	ObjectTypeDB::bind_method("get_rec_buffer_size", &SRConfig::get_rec_buffer_size);
+
+	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "HMM Directory", PROPERTY_HINT_DIR),
+	               _SCS("set_hmm_dirname"),
+	               _SCS("get_hmm_dirname"));
+	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "Dictionary File",
+	                            PROPERTY_HINT_FILE, "dict"),
+	               _SCS("set_dict_filename"),
+	               _SCS("get_dict_filename"));
+	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "Keywords File",
+	                            PROPERTY_HINT_FILE, "kws"),
+	               _SCS("set_kws_filename"),
+	               _SCS("get_kws_filename"));
 }
 
 SRConfig::SRConfig() {
