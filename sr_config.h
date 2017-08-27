@@ -106,4 +106,4 @@ public:
 	~SRConfig();
 };
 
-#endif
+#endif  // SR_CONFIG_H

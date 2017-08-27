@@ -1,6 +1,6 @@
 #include "sr_config.h"
 #include "core/globals.h"         // Globals::get_singleton()->globalize_path()
-#include "core/os/memory.h"       // memalloc(), memfree(), memdelete()
+#include "core/os/memory.h"       // memalloc(), memfree()
 #include "core/os/dir_access.h"   // DirAccess::create_for_path()->dir_exists()
 #include "core/os/file_access.h"  // FileAccess::create_for_path()->file_exists()
 
@@ -25,6 +25,12 @@ SRError::Error SRConfig::init() {
 		SRERR_PRINTS(SRError::UNDEF_FILES_ERR);
 		return SRError::UNDEF_FILES_ERR;
 	}
+
+#ifdef DEBUG_ENABLED
+	print_line("[SRConfig HMM directory]   '" + hmm_dirname   + "'");
+	print_line("[SRConfig dictionary file] '" + dict_filename + "'");
+	print_line("[SRConfig keywords file]   '" + kws_filename  + "'");
+#endif
 
 	String names[3];
 	names[0] = hmm_dirname;
@@ -51,10 +57,6 @@ SRError::Error SRConfig::init() {
 		}
 
 		wcstombs(convert[i], names[i].c_str(), len + 1);
-
-#ifdef DEBUG_ENABLED
-		print_line("[SRConfig Argument] " + String(convert[i]));
-#endif
 	}
 
 	hmm  = convert[0];
@@ -115,10 +117,8 @@ void SRConfig::set_hmm_dirname(String hmm_dirname) {
 	DirAccess *d = DirAccess::create_for_path(hmm_dirname);
 	if (d->dir_exists(hmm_dirname))
 		this->hmm_dirname = hmm_dirname;
-	else {
-		String err_msg = String("Directory '" + hmm_dirname + "' not found!");
-		ERR_PRINT(err_msg.utf8().get_data());
-	}
+	else
+		ERR_PRINTS("Directory '" + hmm_dirname + "' not found!");
 }
 
 String SRConfig::get_hmm_dirname() {
@@ -129,10 +129,8 @@ void SRConfig::set_dict_filename(String dict_filename) {
 	FileAccess *f = FileAccess::create_for_path(dict_filename);
 	if (f->file_exists(dict_filename))
 		this->dict_filename = dict_filename;
-	else {
-		String err_msg = String("File '" + dict_filename + "' not found!");
-		ERR_PRINT(err_msg.utf8().get_data());
-	}
+	else
+		ERR_PRINTS("File '" + dict_filename + "' not found!");
 }
 
 String SRConfig::get_dict_filename() {
@@ -143,10 +141,8 @@ void SRConfig::set_kws_filename(String kws_filename) {
 	FileAccess *f = FileAccess::create_for_path(kws_filename);
 	if (f->file_exists(kws_filename))
 		this->kws_filename = kws_filename;
-	else {
-		String err_msg = String("File '" + kws_filename + "' not found!");
-		ERR_PRINT(err_msg.utf8().get_data());
-	}
+	else
+		ERR_PRINTS("File '" + kws_filename + "' not found!");
 }
 
 String SRConfig::get_kws_filename() {

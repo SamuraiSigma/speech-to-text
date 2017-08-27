@@ -69,4 +69,4 @@ public:
 	SRQueue();
 };
 
-#endif
+#endif  // SR_QUEUE_H
