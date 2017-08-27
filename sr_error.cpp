@@ -6,6 +6,8 @@ String SRError::get_error_string(SRError::Error err) {
 			return "All is well :)";
 		case UNDEF_FILES_ERR:
 			return "One or more file/directory names aren't defined";
+		case UNDEF_CONFIG_ERR:
+			return "Undefined configuration variable (SRConfig)";
 		case MULTIBYTE_STR_ERR:
 			return "Couldn't convert filename to a multibyte sequence";
 		case MEM_ALLOC_ERR:

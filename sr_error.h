@@ -16,6 +16,7 @@ public:
 	enum Error {
 		OK,                  // No error occurred
 		UNDEF_FILES_ERR,     // One or more file/directory names aren't defined
+		UNDEF_CONFIG_ERR,    // Undefined configuration variable (SRConfig)
 		MULTIBYTE_STR_ERR,   // Couldn't convert filename to a multibyte sequence
 		MEM_ALLOC_ERR,       // No memory available for allocation
 		CONFIG_CREATE_ERR,   // Couldn't create Pocketsphinx configuration variable
@@ -34,4 +35,4 @@ public:
 	static String get_error_string(Error err);
 };
 
-#endif
+#endif  // SR_ERROR_H

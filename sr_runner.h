@@ -58,6 +58,9 @@ public:
 	 * Creates a thread to repeatedly listen to keywords. The thread can be stopped
 	 * with the stop() method. If start() was previously called, the current thread
 	 * is halted and a new recognition, with the specified arguments, is created.
+	 * Returns one of the following SRError::Error values:
+	 * - OK
+	 * - UNDEF_CONFIG_ERR
 	 *
 	 * Note: The signal SR_RUNNER_END_SIGNAL is emitted when the thread ends. It
 	 * contains an SRError::Error argument representing what made it stop, which can
@@ -69,7 +72,7 @@ public:
 	 * - UTT_RESTART_ERR
 	 * - AUDIO_READ_ERR
 	 */
-	void start();
+	SRError::Error start();
 
 	/*
 	 * Returns true if the speech recognition thread is active, or false otherwise.
@@ -129,4 +132,4 @@ public:
 	~SRRunner();
 };
 
-#endif
+#endif  // SR_RUNNER_H

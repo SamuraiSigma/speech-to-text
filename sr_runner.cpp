@@ -2,12 +2,17 @@
 #include "sr_error.h"
 #include "core/os/memory.h"  // memnew(), memdelete()
 
-void SRRunner::start() {
-	ERR_FAIL_COND(config.is_null());
+SRError::Error SRRunner::start() {
+	if (config.is_null()) {
+		SRERR_PRINTS(SRError::UNDEF_CONFIG_ERR);
+		return SRError::UNDEF_CONFIG_ERR;
+	}
 
 	if (is_running) stop();
 	is_running = true;
 	recognition = Thread::create(SRRunner::_thread_recognize, this);
+
+	return SRError::OK;
 }
 
 bool SRRunner::running() {
@@ -160,7 +165,7 @@ void SRRunner::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "config",
 	                          PROPERTY_HINT_RESOURCE_TYPE, "SRConfig"),
 	             _SCS("set_config"), _SCS("get_config"));
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "recorder buffer size",
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "recorder buffer size (bytes)",
 	                          PROPERTY_HINT_RANGE, "256,4096,32"),
 	             _SCS("set_rec_buffer_size"), _SCS("get_rec_buffer_size"));
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "keywords queue capacity",
