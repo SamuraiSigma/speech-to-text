@@ -1,13 +1,10 @@
 #include "sr_runner.h"
 #include "sr_error.h"
 
-void SRRunner::start(Ref<SRConfig> config, Ref<SRQueue> queue) {
-	if (is_running)
-		stop();
+void SRRunner::start() {
+	ERR_FAIL_COND(config.is_null() || queue.is_null());
 
-	this->config = config;
-	this->queue = queue;
-
+	if (is_running) stop();
 	is_running = true;
 	recognition = Thread::create(SRRunner::_thread_recognize, this);
 }
@@ -31,11 +28,10 @@ void SRRunner::_thread_recognize(void *sr) {
 }
 
 void SRRunner::_recognize() {
-	int current_buffer_size = config->get_rec_buffer_size();
 	ad_rec_t *recorder = config->get_recorder();
 	ps_decoder_t *decoder = config->get_decoder();
 
-	int16 buffer[current_buffer_size];
+	int16 buffer[rec_buffer_size];
 	int32 n;
 	const char *hyp;
 
@@ -58,7 +54,7 @@ void SRRunner::_recognize() {
 
 	while (is_running) {
 		// Read data from microphone
-		if ((n = ad_read(recorder, buffer, current_buffer_size)) < 0) {
+		if ((n = ad_read(recorder, buffer, rec_buffer_size)) < 0) {
 			is_running = false;
 			ad_stop_rec(recorder);
 			ps_end_utt(decoder);
@@ -102,10 +98,45 @@ void SRRunner::_recognize() {
 	}
 }
 
+void SRRunner::set_config(const Ref<SRConfig> &p_config) {
+	config = p_config;
+}
+
+Ref<SRConfig> SRRunner::get_config() const {
+	return config;
+}
+
+void SRRunner::set_rec_buffer_size(int rec_buffer_size) {
+	if (rec_buffer_size <= 0) {
+		ERR_PRINT("Microphone recorder buffer size must be greater than 0");
+		return;
+	}
+	stop();
+	this->rec_buffer_size = rec_buffer_size;
+}
+
+int SRRunner::get_rec_buffer_size() {
+	return rec_buffer_size;
+}
+
 void SRRunner::_bind_methods() {
 	ObjectTypeDB::bind_method("start",   &SRRunner::start);
 	ObjectTypeDB::bind_method("running", &SRRunner::running);
 	ObjectTypeDB::bind_method("stop",    &SRRunner::stop);
+
+	ObjectTypeDB::bind_method("set_config", &SRRunner::set_config);
+	ObjectTypeDB::bind_method("get_config", &SRRunner::get_config);
+
+	ObjectTypeDB::bind_method("set_rec_buffer_size", &SRRunner::set_rec_buffer_size);
+	ObjectTypeDB::bind_method("get_rec_buffer_size", &SRRunner::get_rec_buffer_size);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "config",
+	                          PROPERTY_HINT_RESOURCE_TYPE, "SRConfig"),
+	             _SCS("set_config"), _SCS("get_config"));
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "recorder buffer size",
+	                          PROPERTY_HINT_RANGE, "256,4096,32"),
+	             _SCS("set_rec_buffer_size"), _SCS("get_rec_buffer_size"));
 
 	ADD_SIGNAL(MethodInfo(SR_RUNNER_END_SIGNAL,
 	                      PropertyInfo(Variant::INT, "error number")));
@@ -114,6 +145,7 @@ void SRRunner::_bind_methods() {
 SRRunner::SRRunner() {
 	recognition = NULL;
 	is_running = false;
+	rec_buffer_size = DEFAULT_REC_BUFFER_SIZE;
 }
 
 SRRunner::~SRRunner() {

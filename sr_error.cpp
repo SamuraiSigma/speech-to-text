@@ -8,7 +8,7 @@ String SRError::get_error_string(SRError::Error err) {
 			return "One or more file/directory names aren't defined";
 		case MULTIBYTE_STR_ERR:
 			return "Couldn't convert filename to a multibyte sequence";
-		case MEMALLOC_ERR:
+		case MEM_ALLOC_ERR:
 			return "No memory available for allocation";
 		case CONFIG_CREATE_ERR:
 			return "Couldn't create Pocketsphinx configuration variable";

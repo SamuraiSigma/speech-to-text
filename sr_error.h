@@ -17,7 +17,7 @@ public:
 		OK,                  // No error occurred
 		UNDEF_FILES_ERR,     // One or more file/directory names aren't defined
 		MULTIBYTE_STR_ERR,   // Couldn't convert filename to a multibyte sequence
-		MEMALLOC_ERR,        // No memory available for allocation
+		MEM_ALLOC_ERR,       // No memory available for allocation
 		CONFIG_CREATE_ERR,   // Couldn't create Pocketsphinx configuration variable
 		REC_CREATE_ERR,      // Couldn't open audio device (microphone)
 		DECODER_CREATE_ERR,  // Couldn't create Sphinxbase decoder variable

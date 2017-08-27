@@ -46,8 +46,8 @@ SRError::Error SRConfig::init() {
 
 		convert[i] = (char *) memalloc((len + 1) * sizeof(char));
 		if (convert[i] == NULL) {
-			SRERR_PRINTS(SRError::MEMALLOC_ERR);
-			return SRError::MEMALLOC_ERR;
+			SRERR_PRINTS(SRError::MEM_ALLOC_ERR);
+			return SRError::MEM_ALLOC_ERR;
 		}
 
 		wcstombs(convert[i], names[i].c_str(), len + 1);
@@ -153,18 +153,6 @@ String SRConfig::get_kws_filename() {
 	return kws_filename;
 }
 
-void SRConfig::set_rec_buffer_size(int rec_buffer_size) {
-	if (rec_buffer_size <= 0) {
-		ERR_PRINT("Microphone recorder buffer size must be greater than 0");
-		return;
-	}
-	this->rec_buffer_size = rec_buffer_size;
-}
-
-int SRConfig::get_rec_buffer_size() {
-	return rec_buffer_size;
-}
-
 void SRConfig::_bind_methods() {
 	ObjectTypeDB::bind_method("init",         &SRConfig::init);
 	ObjectTypeDB::bind_method("get_recorder", &SRConfig::get_recorder);
@@ -177,20 +165,14 @@ void SRConfig::_bind_methods() {
 	ObjectTypeDB::bind_method("set_kws_filename",  &SRConfig::set_kws_filename);
 	ObjectTypeDB::bind_method("get_kws_filename",  &SRConfig::get_kws_filename);
 
-	ObjectTypeDB::bind_method("set_rec_buffer_size", &SRConfig::set_rec_buffer_size);
-	ObjectTypeDB::bind_method("get_rec_buffer_size", &SRConfig::get_rec_buffer_size);
-
-	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "HMM Directory", PROPERTY_HINT_DIR),
-	               _SCS("set_hmm_dirname"),
-	               _SCS("get_hmm_dirname"));
-	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "Dictionary File",
+	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "hmm directory", PROPERTY_HINT_DIR),
+	               _SCS("set_hmm_dirname"), _SCS("get_hmm_dirname"));
+	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "dictionary file",
 	                            PROPERTY_HINT_FILE, "dict"),
-	               _SCS("set_dict_filename"),
-	               _SCS("get_dict_filename"));
-	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "Keywords File",
+	               _SCS("set_dict_filename"), _SCS("get_dict_filename"));
+	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "keywords file",
 	                            PROPERTY_HINT_FILE, "kws"),
-	               _SCS("set_kws_filename"),
-	               _SCS("get_kws_filename"));
+	               _SCS("set_kws_filename"), _SCS("get_kws_filename"));
 }
 
 SRConfig::SRConfig() {

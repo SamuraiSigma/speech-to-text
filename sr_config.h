@@ -8,9 +8,6 @@
 #include "sphinxbase/ad.h"
 #include "pocketsphinx.h"
 
-// Microphone recorder default buffer size
-#define DEFAULT_REC_BUFFER_SIZE 2048
-
 class SRConfig : public Resource {
 	OBJ_TYPE(SRConfig, Resource);
 
@@ -25,9 +22,6 @@ private:
 
 	// C strings for the above String names
 	char *hmm, *dict, *kws;
-
-	// Microphone recorder buffer size
-	int rec_buffer_size;
 
 protected:
 	/*
@@ -44,6 +38,7 @@ public:
 	 *
 	 * Returns one of the following SRError::Error values:
 	 * - OK
+	 * - UNDEF_FILES_ERR
 	 * - MULTIBYTE_STR_ERR
 	 * - MEMALLOC_ERR
 	 * - CONFIG_CREATE_ERR
@@ -99,17 +94,6 @@ public:
 	 * yet, returns an empty String ("").
 	 */
 	String get_kws_filename();
-
-	/*
-	 * Sets the microphone recorder buffer size used for speech recognition as the
-	 * specified value. Must be > 0.
-	 */
-	void set_rec_buffer_size(int rec_buffer_size);
-
-	/*
-	 * Returns the microphone recorder buffer size used for speech recognition.
-	 */
-	int get_rec_buffer_size();
 
 	/*
 	 * Initializes attributes.

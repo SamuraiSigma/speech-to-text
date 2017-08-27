@@ -7,6 +7,9 @@
 #include "sr_config.h"
 #include "sr_queue.h"
 
+// Microphone recorder default buffer size
+#define DEFAULT_REC_BUFFER_SIZE 2048
+
 // Signal emitted when speech recognition thread has ended
 #define SR_RUNNER_END_SIGNAL "speech_recognition_end"
 
@@ -19,6 +22,9 @@ private:
 
 	Ref<SRConfig> config;  // Configuration object containing recognition variables
 	Ref<SRQueue> queue;    // Queue for storing recognized keywords
+
+	// Microphone recorder buffer size
+	int rec_buffer_size;
 
 	/*
 	 * Thread wrapper function, calls _recognize() method of its SRRunner
@@ -53,7 +59,7 @@ public:
 	 * - UTT_RESTART_ERR
 	 * - AUDIO_READ_ERR
 	 */
-	void start(Ref<SRConfig> config, Ref<SRQueue> queue);
+	void start();
 
 	/*
 	 * Returns true if the speech recognition thread is active, or false otherwise.
@@ -65,6 +71,27 @@ public:
 	 * called previously, this function does nothing.
 	 */
 	void stop();
+
+	/*
+	 * Sets the Config object containing recognition variables.
+	 */
+	void set_config(const Ref<SRConfig> &p_config);
+
+	/*
+	 * Returns the Config object containing recognition variables.
+	 */
+	Ref<SRConfig> get_config() const;
+
+	/*
+	 * Sets the microphone recorder buffer size used for speech recognition as the
+	 * specified value. Must be > 0.
+	 */
+	void set_rec_buffer_size(int rec_buffer_size);
+
+	/*
+	 * Returns the microphone recorder buffer size used for speech recognition.
+	 */
+	int get_rec_buffer_size();
 
 	/*
 	 * Initializes speech recognizer variables.
