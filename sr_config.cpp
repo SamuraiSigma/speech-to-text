@@ -154,11 +154,16 @@ void SRConfig::_bind_methods() {
 	ObjectTypeDB::bind_method("get_recorder", &SRConfig::get_recorder);
 	ObjectTypeDB::bind_method("get_decoder",  &SRConfig::get_decoder);
 
-	ObjectTypeDB::bind_method("set_hmm_dirname",   &SRConfig::set_hmm_dirname);
+	ObjectTypeDB::bind_method(_MD("set_hmm_dirname", "hmm_dirname"),
+	                          &SRConfig::set_hmm_dirname);
 	ObjectTypeDB::bind_method("get_hmm_dirname",   &SRConfig::get_hmm_dirname);
-	ObjectTypeDB::bind_method("set_dict_filename", &SRConfig::set_dict_filename);
+
+	ObjectTypeDB::bind_method(_MD("set_dict_filename", "dict_filename"),
+	                          &SRConfig::set_dict_filename);
 	ObjectTypeDB::bind_method("get_dict_filename", &SRConfig::get_dict_filename);
-	ObjectTypeDB::bind_method("set_kws_filename",  &SRConfig::set_kws_filename);
+
+	ObjectTypeDB::bind_method(_MD("set_kws_filename", "kws_filename"),
+	                          &SRConfig::set_kws_filename);
 	ObjectTypeDB::bind_method("get_kws_filename",  &SRConfig::get_kws_filename);
 
 	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "hmm directory", PROPERTY_HINT_DIR),

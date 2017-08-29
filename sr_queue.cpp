@@ -46,13 +46,14 @@ int SRQueue::get_capacity() {
 }
 
 void SRQueue::_bind_methods() {
-	ObjectTypeDB::bind_method("get",   &SRQueue::get);
-	ObjectTypeDB::bind_method("add",   &SRQueue::add);
-	ObjectTypeDB::bind_method("size",  &SRQueue::size);
-	ObjectTypeDB::bind_method("empty", &SRQueue::empty);
-	ObjectTypeDB::bind_method("clear", &SRQueue::clear);
+	ObjectTypeDB::bind_method("get",                 &SRQueue::get);
+	ObjectTypeDB::bind_method(_MD("add", "keyword"), &SRQueue::add);
+	ObjectTypeDB::bind_method("size",                &SRQueue::size);
+	ObjectTypeDB::bind_method("empty",               &SRQueue::empty);
+	ObjectTypeDB::bind_method("clear",               &SRQueue::clear);
 
-	ObjectTypeDB::bind_method("set_capacity", &SRQueue::set_capacity);
+	ObjectTypeDB::bind_method(_MD("set_capacity", "capacity"),
+	                          &SRQueue::set_capacity);
 	ObjectTypeDB::bind_method("get_capacity", &SRQueue::get_capacity);
 
 	BIND_CONSTANT(DEFAULT_KWS_CAPACITY);

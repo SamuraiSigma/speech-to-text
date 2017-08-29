@@ -150,15 +150,20 @@ void SRRunner::_bind_methods() {
 	ObjectTypeDB::bind_method("running", &SRRunner::running);
 	ObjectTypeDB::bind_method("stop",    &SRRunner::stop);
 
-	ObjectTypeDB::bind_method("set_config",  &SRRunner::set_config);
-	ObjectTypeDB::bind_method("get_config",  &SRRunner::get_config);
+	ObjectTypeDB::bind_method(_MD("set_config", "sr_config"),
+	                          &SRRunner::set_config);
+	ObjectTypeDB::bind_method("get_config", &SRRunner::get_config);
+
 	ObjectTypeDB::bind_method("get_queue",   &SRRunner::get_queue);
 	ObjectTypeDB::bind_method("reset_queue", &SRRunner::reset_queue);
 
-	ObjectTypeDB::bind_method("set_rec_buffer_size", &SRRunner::set_rec_buffer_size);
+	ObjectTypeDB::bind_method(_MD("set_rec_buffer_size", "size"),
+	                          &SRRunner::set_rec_buffer_size);
 	ObjectTypeDB::bind_method("get_rec_buffer_size", &SRRunner::get_rec_buffer_size);
-    ObjectTypeDB::bind_method("set_queue_capacity",  &SRRunner::set_queue_capacity);
-	ObjectTypeDB::bind_method("get_queue_capacity",  &SRRunner::get_queue_capacity);
+
+	ObjectTypeDB::bind_method(_MD("set_queue_capacity", "capacity"),
+	                          &SRRunner::set_queue_capacity);
+	ObjectTypeDB::bind_method("get_queue_capacity", &SRRunner::get_queue_capacity);
 
 	BIND_CONSTANT(DEFAULT_REC_BUFFER_SIZE);
 

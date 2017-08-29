@@ -42,7 +42,8 @@ SRError * SRError::get_singleton() {
 }
 
 void SRError::_bind_methods() {
-	ObjectTypeDB::bind_method("get_error_string", &SRError::get_error_string);
+	ObjectTypeDB::bind_method(_MD("get_error_string", "error_number"),
+	                          &SRError::get_error_string);
 
 	BIND_CONSTANT(OK);
 	BIND_CONSTANT(UNDEF_FILES_ERR);
