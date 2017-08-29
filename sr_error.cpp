@@ -11,6 +11,8 @@ String SRError::get_error_string(SRError::Error err) {
 			return "One or more file/directory names aren't defined";
 		case UNDEF_CONFIG_ERR:
 			return "Undefined configuration variable (SRConfig)";
+		case UNDEF_QUEUE_ERR:
+			return "Undefined keywords queue (SRQueue)";
 		case MULTIBYTE_STR_ERR:
 			return "Couldn't convert filename to a multibyte sequence";
 		case MEM_ALLOC_ERR:
@@ -48,6 +50,7 @@ void SRError::_bind_methods() {
 	BIND_CONSTANT(OK);
 	BIND_CONSTANT(UNDEF_FILES_ERR);
 	BIND_CONSTANT(UNDEF_CONFIG_ERR);
+	BIND_CONSTANT(UNDEF_QUEUE_ERR);
 	BIND_CONSTANT(MULTIBYTE_STR_ERR);
 	BIND_CONSTANT(CONFIG_CREATE_ERR);
 	BIND_CONSTANT(MEM_ALLOC_ERR);

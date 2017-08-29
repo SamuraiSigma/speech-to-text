@@ -19,6 +19,7 @@ public:
 		OK,                  // No error occurred
 		UNDEF_FILES_ERR,     // One or more file/directory names aren't defined
 		UNDEF_CONFIG_ERR,    // Undefined configuration variable (SRConfig)
+		UNDEF_QUEUE_ERR,     // Undefined keywords queue (SRQueue)
 		MULTIBYTE_STR_ERR,   // Couldn't convert filename to a multibyte sequence
 		MEM_ALLOC_ERR,       // No memory available for allocation
 		CONFIG_CREATE_ERR,   // Couldn't create Pocketsphinx configuration variable

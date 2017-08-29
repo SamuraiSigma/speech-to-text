@@ -21,7 +21,7 @@ private:
 	bool is_running;      // If true, speech recognition loop is currently on
 
 	Ref<SRConfig> config;  // Configuration object containing recognition variables
-	SRQueue *queue;        // Queue for storing recognized keywords
+	Ref<SRQueue> queue;    // Queue for storing recognized keywords
 
 	// Microphone recorder buffer size
 	int rec_buffer_size;
@@ -61,6 +61,7 @@ public:
 	 * Returns one of the following SRError::Error values:
 	 * - OK
 	 * - UNDEF_CONFIG_ERR
+	 * - UNDEF_QUEUE_ERR
 	 *
 	 * Note: The signal SR_RUNNER_END_SIGNAL is emitted when the thread ends. It
 	 * contains an SRError::Error argument representing what made it stop, which can
@@ -97,17 +98,15 @@ public:
 	Ref<SRConfig> get_config() const;
 
 	/*
+	 * Sets the SRQueue that stores recognized keywords. If the speech recognition
+	 * thread is already running, it will be stopped.
+	 */
+	void set_queue(const Ref<SRQueue> &p_queue);
+
+	/*
 	 * Returns the SRQueue that stores recognized keywords.
 	 */
 	Ref<SRQueue> get_queue() const;
-
-	/*
-	 * Creates a new SRQueue to be used, with the same capacity as the previous one.
-	 * Note that the reference to the previous SRQueue will still exist, and be
-	 * freed when no more references to it exist. If the speech recognition thread is
-	 * currently running, it will be stopped.
-	 */
-	void reset_queue();
 
 	/*
 	 * Sets the microphone recorder buffer size used for speech recognition as the

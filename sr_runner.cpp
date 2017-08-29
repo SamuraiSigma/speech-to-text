@@ -7,6 +7,10 @@ SRError::Error SRRunner::start() {
 		SRERR_PRINTS(SRError::UNDEF_CONFIG_ERR);
 		return SRError::UNDEF_CONFIG_ERR;
 	}
+	if (queue.is_null()) {
+		SRERR_PRINTS(SRError::UNDEF_QUEUE_ERR);
+		return SRError::UNDEF_QUEUE_ERR;
+	}
 
 	if (is_running) stop();
 	is_running = true;
@@ -113,15 +117,13 @@ Ref<SRConfig> SRRunner::get_config() const {
 	return config;
 }
 
-Ref<SRQueue> SRRunner::get_queue() const {
-	return queue;
+void SRRunner::set_queue(const Ref<SRQueue> &p_queue) {
+	stop();
+	queue = p_queue;
 }
 
-void SRRunner::reset_queue() {
-	stop();
-	int old_capacity = queue->get_capacity();
-	queue = memnew(SRQueue);
-	queue->set_capacity(old_capacity);
+Ref<SRQueue> SRRunner::get_queue() const {
+	return queue;
 }
 
 void SRRunner::set_rec_buffer_size(int rec_buffer_size) {
@@ -137,14 +139,6 @@ int SRRunner::get_rec_buffer_size() {
 	return rec_buffer_size;
 }
 
-void SRRunner::set_queue_capacity(int capacity) {
-	queue->set_capacity(capacity);
-}
-
-int SRRunner::get_queue_capacity() {
-	return queue->get_capacity();
-}
-
 void SRRunner::_bind_methods() {
 	ObjectTypeDB::bind_method("start",   &SRRunner::start);
 	ObjectTypeDB::bind_method("running", &SRRunner::running);
@@ -154,16 +148,12 @@ void SRRunner::_bind_methods() {
 	                          &SRRunner::set_config);
 	ObjectTypeDB::bind_method("get_config", &SRRunner::get_config);
 
-	ObjectTypeDB::bind_method("get_queue",   &SRRunner::get_queue);
-	ObjectTypeDB::bind_method("reset_queue", &SRRunner::reset_queue);
+	ObjectTypeDB::bind_method(_MD("set_queue", "sr_queue"), &SRRunner::set_queue);
+	ObjectTypeDB::bind_method("get_queue", &SRRunner::get_queue);
 
 	ObjectTypeDB::bind_method(_MD("set_rec_buffer_size", "size"),
 	                          &SRRunner::set_rec_buffer_size);
 	ObjectTypeDB::bind_method("get_rec_buffer_size", &SRRunner::get_rec_buffer_size);
-
-	ObjectTypeDB::bind_method(_MD("set_queue_capacity", "capacity"),
-	                          &SRRunner::set_queue_capacity);
-	ObjectTypeDB::bind_method("get_queue_capacity", &SRRunner::get_queue_capacity);
 
 	BIND_CONSTANT(DEFAULT_REC_BUFFER_SIZE);
 
@@ -173,19 +163,12 @@ void SRRunner::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "recorder buffer size (bytes)",
 	                          PROPERTY_HINT_RANGE, "256,4096,32"),
 	             _SCS("set_rec_buffer_size"), _SCS("get_rec_buffer_size"));
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "keywords queue capacity",
-	                          PROPERTY_HINT_RANGE, "1,500,1"),
-	                          _SCS("set_queue_capacity"),
-	                          _SCS("get_queue_capacity"));
 
 	ADD_SIGNAL(MethodInfo(SR_RUNNER_END_SIGNAL,
 	                      PropertyInfo(Variant::INT, "error number")));
 }
 
 SRRunner::SRRunner() {
-	queue = memnew(SRQueue);
-	// queue is automatically freed when there are no more references to it
-
 	recognition = NULL;
 	is_running = false;
 	rec_buffer_size = DEFAULT_REC_BUFFER_SIZE;
