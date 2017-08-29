@@ -56,6 +56,11 @@ public:
 	 * Initializes the class's singleton.
 	 */
 	SRError();
+
+	/*
+	 * Doesn't actually do anything. :P
+	 */
+	~SRError();
 };
 
 // Makes the enum work when binding to methods

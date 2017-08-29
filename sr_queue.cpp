@@ -61,3 +61,5 @@ void SRQueue::_bind_methods() {
 SRQueue::SRQueue() {
 	capacity = DEFAULT_KWS_CAPACITY;
 }
+
+SRQueue::~SRQueue() {}

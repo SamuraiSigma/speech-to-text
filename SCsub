@@ -6,7 +6,7 @@ Import('env')
 module_env = env.Clone()
 
 # -DHAVE_CONFIG_H allows compiling of libsphinxbase/util source files
-module_flags = ['-O2', '-Wall', '-Wno-unused-result', '-DHAVE_CONFIG_H']
+module_flags = ['-O3', '-Wall', '-Wno-unused-result', '-DHAVE_CONFIG_H']
 module_env.Append(CFLAGS=module_flags)
 
 # ---------------------------------------------------------------------

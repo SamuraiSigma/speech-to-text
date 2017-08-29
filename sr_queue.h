@@ -67,6 +67,11 @@ public:
 	 * Initializes queue capacity.
 	 */
 	SRQueue();
+
+	/*
+	 * Doesn't actually do anything. :P
+	 */
+	~SRQueue();
 };
 
 #endif  // SR_QUEUE_H

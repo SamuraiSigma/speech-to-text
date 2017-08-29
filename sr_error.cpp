@@ -62,3 +62,5 @@ void SRError::_bind_methods() {
 SRError::SRError() {
 	singleton = this;
 }
+
+SRError::~SRError() {}
