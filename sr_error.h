@@ -1,12 +1,14 @@
 #ifndef SR_ERROR_H
 #define SR_ERROR_H
 
+#include "core/object.h"
 #include "core/ustring.h"
 
 // Shortcut for printing SRError::Error values with ERR_PRINT()
-#define SRERR_PRINTS(err) ERR_PRINTS(SRError::get_error_string(err));
+#define SRERR_PRINTS(e) ERR_PRINTS(SRError::get_singleton()->get_error_string(e));
 
-class SRError {
+class SRError : public Object {
+	OBJ_TYPE(SRError, Object);
 
 public:
 	/*
@@ -29,10 +31,34 @@ public:
 		AUDIO_READ_ERR       // Error while reading data from recorder
 	};
 
+protected:
+	// Singleton for this class's only instance.
+	static SRError *singleton;
+
+	/*
+	 * Needed so that GDScript can recognize public methods and the enum from this
+	 * class.
+	 */
+	static void _bind_methods();
+
+public:
+	/*
+	 * Returns this class's only instance (or NULL, if it wasn't instanced yet).
+	 */
+	static SRError * get_singleton();
+
 	/*
 	 * Returns a short String explaining the given Error value.
 	 */
-	static String get_error_string(Error err);
+	String get_error_string(Error err);
+
+	/*
+	 * Initializes the class's singleton.
+	 */
+	SRError();
 };
+
+// Makes the enum work when binding to methods
+VARIANT_ENUM_CAST(SRError::Error);
 
 #endif  // SR_ERROR_H
