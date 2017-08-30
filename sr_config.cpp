@@ -27,9 +27,9 @@ SRError::Error SRConfig::init() {
 	}
 
 #ifdef DEBUG_ENABLED
-	print_line("[SRConfig HMM directory]   '" + hmm_dirname   + "'");
+	print_line("[SRConfig HMM directory] '" + hmm_dirname + "'");
 	print_line("[SRConfig dictionary file] '" + dict_filename + "'");
-	print_line("[SRConfig keywords file]   '" + kws_filename  + "'");
+	print_line("[SRConfig keywords file] '" + kws_filename + "'");
 #endif
 
 	String names[3];

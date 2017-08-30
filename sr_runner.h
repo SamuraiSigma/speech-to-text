@@ -13,6 +13,10 @@
 // Signal emitted when speech recognition thread has ended
 #define SR_RUNNER_END_SIGNAL "speech_recognition_end"
 
+/*
+ * Responsible for running speech recognition itself, identifying keywords spoken
+ * by the user.
+ */
 class SRRunner : public Node {
 	OBJ_TYPE(SRRunner, Node);
 
@@ -37,19 +41,9 @@ private:
 	 */
 	void _recognize();
 
-	/*
-	 * Sets the keywords queue's maximum capacity.
-	 */
-	void set_queue_capacity(int capacity);
-
-	/*
-	 * Returns the keywords queue's current maximum capacity.
-	 */
-	int get_queue_capacity();
-
 protected:
 	/*
-	 * Needed so that GDScript can recognize public methods from this class.
+	 * Makes GDScript recognize public methods from this class.
 	 */
 	static void _bind_methods();
 

@@ -7,6 +7,10 @@
 // Shortcut for printing SRError::Error values with ERR_PRINT()
 #define SRERR_PRINTS(e) ERR_PRINTS(SRError::get_singleton()->get_error_string(e));
 
+/*
+ * Defines error values returned by some speech recognition-related methods, as well
+ * as their meanings.
+ */
 class SRError : public Object {
 	OBJ_TYPE(SRError, Object);
 
@@ -37,8 +41,7 @@ protected:
 	static SRError *singleton;
 
 	/*
-	 * Needed so that GDScript can recognize public methods and the enum from this
-	 * class.
+	 * Makes GDScript recognize public methods and the enum from this class.
 	 */
 	static void _bind_methods();
 

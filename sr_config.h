@@ -8,11 +8,17 @@
 #include "sphinxbase/ad.h"
 #include "pocketsphinx.h"
 
+/*
+ * Stores filenames and variables for Pocketsphinx speech recognition.
+ *
+ * Contains filenames and variables needed for Pocketsphinx speech recognition.
+ * Instances of this class supply information to SRRunner objects.
+ */
 class SRConfig : public Resource {
 	OBJ_TYPE(SRConfig, Resource);
 
 private:
-	cmd_ln_t *conf;         // Configuration type for sphinx variables
+	cmd_ln_t *conf;         // Configuration type for Sphinx variables
 	ad_rec_t *recorder;     // Records sound from microphone
 	ps_decoder_t *decoder;  // Decodes speech to text
 
@@ -25,16 +31,15 @@ private:
 
 protected:
 	/*
-	 * Needed so that GDScript can recognize public methods from this class.
+	 * Makes GDScript recognize public methods from this class.
 	 */
 	static void _bind_methods();
 
 public:
 	/*
-	 * Initializes variables for recognizing speech. The attributes for HMM
-	 * directory name, dictionary filename and keywords filename must have been
-	 * previously defined with the appropriate setters. Supposes that these files
-	 * and folder follow Pocketsphinx conventions.
+	 * Initializes Pocketsphinx speech recognition variables. The attributes for
+	 * HMM directory name, dictionary filename and keywords filename must have been
+	 * previously defined with the appropriate setters.
 	 *
 	 * Returns one of the following SRError::Error values:
 	 * - OK
@@ -60,8 +65,7 @@ public:
 	ps_decoder_t * get_decoder();
 
 	/*
-	 * Defines the HMM directory name as the specified value. If the directory
-	 * doesn't exist, raises an Error.
+	 * Sets the HMM directory name as the specified value if the directory exists.
 	 */
 	void set_hmm_dirname(String hmm_dirname);
 
@@ -72,8 +76,7 @@ public:
 	String get_hmm_dirname();
 
 	/*
-	 * Defines the dictionary filename as the specified value. If the file doesn't
-	 * exist, raises an Error.
+	 * Sets the dictionary filename as the specified value if the file exists.
 	 */
 	void set_dict_filename(String dict_filename);
 
@@ -84,8 +87,7 @@ public:
 	String get_dict_filename();
 
 	/*
-	 * Defines the keywords filename as the specified value. If the file doesn't
-	 * exist, raises an Error.
+	 * Sets the keywords filename as the specified value if the file exists.
 	 */
 	void set_kws_filename(String kws_filename);
 

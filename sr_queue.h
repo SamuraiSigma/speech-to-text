@@ -7,11 +7,14 @@
 // Default capacity for the keywords queue
 #define DEFAULT_KWS_CAPACITY 100
 
+/*
+ * Wrapper for a queue datatype. Typically stores keywords from speech recognition.
+ */
 class SRQueue : public Reference {
 	OBJ_TYPE(SRQueue, Reference);
 
 private:
-	// Queue for storing recognized keywords
+	// Queue for storing recognized keywords; operations are thread-safe
 	Vector<String> keywords;
 
 	// Maximum number of keywords that can be stored in the queue
@@ -19,7 +22,7 @@ private:
 
 protected:
 	/*
-	 * Needed so that GDScript can recognize public methods from this class.
+	 * Makes GDScript recognize public methods from this class.
 	 */
 	static void _bind_methods();
 
