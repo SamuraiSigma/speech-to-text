@@ -16,6 +16,7 @@
  */
 class SRConfig : public Resource {
 	OBJ_TYPE(SRConfig, Resource);
+	friend class SRRunner;
 
 private:
 	cmd_ln_t *conf;         // Configuration type for Sphinx variables
@@ -51,18 +52,6 @@ public:
 	 * - DECODER_CREATE_ERR
 	 */
 	SRError::Error init();
-
-	/*
-	 * Returns a pointer to a Pocketsphinx ad_rec_t recorder variable, created
-	 * previously by init(). If no recorder variable exists, returns NULL.
-	 */
-	ad_rec_t * get_recorder();
-
-	/*
-	 * Returns a pointer to a Pocketsphinx ps_decoder_t decoder variable, created
-	 * previously by init(). If no decoder variable exists, returns NULL.
-	 */
-	ps_decoder_t * get_decoder();
 
 	/*
 	 * Sets the HMM directory name as the specified value if the directory exists.

@@ -105,14 +105,6 @@ SRError::Error SRConfig::init() {
 	return SRError::OK;
 }
 
-ad_rec_t * SRConfig::get_recorder() {
-	return recorder;
-}
-
-ps_decoder_t * SRConfig::get_decoder() {
-	return decoder;
-}
-
 void SRConfig::set_hmm_dirname(String hmm_dirname) {
 	DirAccess *d = DirAccess::create_for_path(hmm_dirname);
 	if (d->dir_exists(hmm_dirname))
@@ -150,13 +142,11 @@ String SRConfig::get_kws_filename() {
 }
 
 void SRConfig::_bind_methods() {
-	ObjectTypeDB::bind_method("init",         &SRConfig::init);
-	ObjectTypeDB::bind_method("get_recorder", &SRConfig::get_recorder);
-	ObjectTypeDB::bind_method("get_decoder",  &SRConfig::get_decoder);
+	ObjectTypeDB::bind_method("init", &SRConfig::init);
 
 	ObjectTypeDB::bind_method(_MD("set_hmm_dirname", "hmm_dirname"),
 	                          &SRConfig::set_hmm_dirname);
-	ObjectTypeDB::bind_method("get_hmm_dirname",   &SRConfig::get_hmm_dirname);
+	ObjectTypeDB::bind_method("get_hmm_dirname", &SRConfig::get_hmm_dirname);
 
 	ObjectTypeDB::bind_method(_MD("set_dict_filename", "dict_filename"),
 	                          &SRConfig::set_dict_filename);
@@ -164,7 +154,7 @@ void SRConfig::_bind_methods() {
 
 	ObjectTypeDB::bind_method(_MD("set_kws_filename", "kws_filename"),
 	                          &SRConfig::set_kws_filename);
-	ObjectTypeDB::bind_method("get_kws_filename",  &SRConfig::get_kws_filename);
+	ObjectTypeDB::bind_method("get_kws_filename", &SRConfig::get_kws_filename);
 
 	ADD_PROPERTYNZ(PropertyInfo(Variant::STRING, "hmm directory", PROPERTY_HINT_DIR),
 	               _SCS("set_hmm_dirname"), _SCS("get_hmm_dirname"));

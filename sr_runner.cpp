@@ -38,37 +38,34 @@ void SRRunner::_thread_recognize(void *sr) {
 }
 
 void SRRunner::_recognize() {
-	ad_rec_t *recorder = config->get_recorder();
-	ps_decoder_t *decoder = config->get_decoder();
-
 	int16 buffer[rec_buffer_size];
 	int32 n;
 	const char *hyp;
 
 	// Start recording
-	if (ad_start_rec(recorder) < 0) {
+	if (ad_start_rec(config->recorder) < 0) {
 		_error_stop(SRError::REC_START_ERR);
 		return;
 	}
 
 	// Start utterance
-	if (ps_start_utt(decoder) < 0) {
+	if (ps_start_utt(config->decoder) < 0) {
 		_error_stop(SRError::UTT_START_ERR);
 		return;
 	}
 
 	while (is_running) {
 		// Read data from microphone
-		if ((n = ad_read(recorder, buffer, rec_buffer_size)) < 0) {
+		if ((n = ad_read(config->recorder, buffer, rec_buffer_size)) < 0) {
 			_error_stop(SRError::AUDIO_READ_ERR);
 			return;
 		}
 
 		// Process captured sound
-		ps_process_raw(decoder, buffer, n, FALSE, FALSE);
+		ps_process_raw(config->decoder, buffer, n, FALSE, FALSE);
 
 		// Check for keyword in captured sound
-		hyp = ps_get_hyp(decoder, NULL);
+		hyp = ps_get_hyp(config->decoder, NULL);
 		if (hyp != NULL) {
 			// Add new keyword to queue, if possible
 			if (queue->add(String(hyp))) {
@@ -80,8 +77,8 @@ void SRRunner::_recognize() {
 				WARN_PRINT("Cannot store more keywords in the SRQueue!");
 
 			// Restart decoder
-			ps_end_utt(decoder);
-			if (ps_start_utt(decoder) < 0) {
+			ps_end_utt(config->decoder);
+			if (ps_start_utt(config->decoder) < 0) {
 				_error_stop(SRError::UTT_RESTART_ERR);
 				return;
 			}
@@ -89,15 +86,15 @@ void SRRunner::_recognize() {
 	}
 
 	// Stop recording
-	if (ad_stop_rec(recorder) < 0)
+	if (ad_stop_rec(config->recorder) < 0)
 		_error_stop(SRError::REC_STOP_ERR);
 }
 
 void SRRunner::_error_stop(SRError::Error err) {
 	SRERR_PRINTS(err);
 
-	ad_stop_rec(config->get_recorder());
-	ps_end_utt(config->get_decoder());
+	ad_stop_rec(config->recorder);
+	ps_end_utt(config->decoder);
 	emit_signal(SR_RUNNER_END_SIGNAL, err);
 
 	is_running = false;
