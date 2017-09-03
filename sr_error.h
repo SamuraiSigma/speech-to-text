@@ -4,64 +4,73 @@
 #include "core/object.h"
 #include "core/ustring.h"
 
-// Shortcut for printing SRError::Error values with ERR_PRINT()
+/**
+ * Shortcut for printing SRError::Error values with \c ERR_PRINT()
+ */
 #define SRERR_PRINTS(e) ERR_PRINTS(SRError::get_singleton()->get_error_string(e));
 
-/*
+/**
  * Defines error values returned by some speech recognition-related methods, as well
  * as their meanings.
+ *
+ * @author SamuraiSigma
  */
 class SRError : public Object {
 	OBJ_TYPE(SRError, Object);
 
 public:
-	/*
+	/**
 	 * Defines error values that some speech recognition-related functions may
 	 * return.
 	 */
 	enum Error {
-		OK,                  // No error occurred
-		UNDEF_FILES_ERR,     // One or more file/directory names aren't defined
-		UNDEF_CONFIG_ERR,    // Undefined configuration variable (SRConfig)
-		UNDEF_QUEUE_ERR,     // Undefined keywords queue (SRQueue)
-		MULTIBYTE_STR_ERR,   // Couldn't convert filename to a multibyte sequence
-		MEM_ALLOC_ERR,       // No memory available for allocation
-		CONFIG_CREATE_ERR,   // Couldn't create Pocketsphinx configuration variable
-		REC_CREATE_ERR,      // Couldn't open audio device (microphone)
-		DECODER_CREATE_ERR,  // Couldn't create Sphinxbase decoder variable
-		REC_START_ERR,       // Couldn't start recording user's voice
-		REC_STOP_ERR,        // Couldn't stop recording user's voice
-		UTT_START_ERR,       // Couldn't start utterance during speech recognition
-		UTT_RESTART_ERR,     // Couldn't restart utterance during speech recognition
-		AUDIO_READ_ERR       // Error while reading data from recorder
+		OK,                 ///< No error occurred
+		UNDEF_FILES_ERR,    ///< One or more file/directory names aren't defined
+		UNDEF_CONFIG_ERR,   ///< Undefined configuration variable (SRConfig)
+		UNDEF_QUEUE_ERR,    ///< Undefined keywords queue (SRQueue)
+		MULTIBYTE_STR_ERR,  ///< Couldn't convert filename to a multibyte sequence
+		MEM_ALLOC_ERR,      ///< No memory available for allocation
+		CONFIG_CREATE_ERR,  ///< Couldn't create Pocketsphinx configuration variable
+		REC_CREATE_ERR,     ///< Couldn't open audio device (microphone)
+		DECODER_CREATE_ERR, ///< Couldn't create Sphinxbase decoder variable
+		REC_START_ERR,      ///< Couldn't start recording user's voice
+		REC_STOP_ERR,       ///< Couldn't stop recording user's voice
+		UTT_START_ERR,      ///< Couldn't start utterance during speech recognition
+		UTT_RESTART_ERR,    ///< Couldn't restart utterance during speech recognition
+		AUDIO_READ_ERR      ///< Error while reading data from recorder
 	};
 
 protected:
-	// Singleton for this class's only instance.
-	static SRError *singleton;
+	static SRError *singleton;  ///< Singleton for this class's only instance.
 
-	/*
-	 * Makes GDScript recognize public methods and the enum from this class.
+	/**
+	 * Makes \a GDScript recognize public methods and the enum from this class.
 	 */
 	static void _bind_methods();
 
 public:
-	/*
-	 * Returns this class's only instance (or NULL, if it wasn't instanced yet).
+	/**
+	 * Returns this class's only instance (or \c NULL, if it wasn't instanced yet).
+	 *
+	 * @return This class's singleton.
 	 */
 	static SRError * get_singleton();
 
-	/*
-	 * Returns a short String explaining the given Error value.
+	/**
+	 * Returns a short \c String explaining the given Error value.
+	 *
+	 * @param err an Error value.
+	 *
+	 * @return \c String explaining the \c err value.
 	 */
 	String get_error_string(Error err);
 
-	/*
+	/**
 	 * Initializes the class's singleton.
 	 */
 	SRError();
 
-	/*
+	/**
 	 * Doesn't actually do anything. :P
 	 */
 	~SRError();
