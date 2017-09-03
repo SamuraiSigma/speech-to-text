@@ -47,29 +47,20 @@ void SRRunner::_recognize() {
 
 	// Start recording
 	if (ad_start_rec(recorder) < 0) {
-		is_running = false;
-		SRERR_PRINTS(SRError::REC_START_ERR);
-		emit_signal(SR_RUNNER_END_SIGNAL, SRError::REC_START_ERR);
+		_error_stop(SRError::REC_START_ERR);
 		return;
 	}
 
 	// Start utterance
 	if (ps_start_utt(decoder) < 0) {
-		is_running = false;
-		ad_stop_rec(recorder);
-		SRERR_PRINTS(SRError::UTT_START_ERR);
-		emit_signal(SR_RUNNER_END_SIGNAL, SRError::UTT_START_ERR);
+		_error_stop(SRError::UTT_START_ERR);
 		return;
 	}
 
 	while (is_running) {
 		// Read data from microphone
 		if ((n = ad_read(recorder, buffer, rec_buffer_size)) < 0) {
-			is_running = false;
-			ad_stop_rec(recorder);
-			ps_end_utt(decoder);
-			SRERR_PRINTS(SRError::AUDIO_READ_ERR);
-			emit_signal(SR_RUNNER_END_SIGNAL, SRError::AUDIO_READ_ERR);
+			_error_stop(SRError::AUDIO_READ_ERR);
 			return;
 		}
 
@@ -91,21 +82,25 @@ void SRRunner::_recognize() {
 			// Restart decoder
 			ps_end_utt(decoder);
 			if (ps_start_utt(decoder) < 0) {
-				is_running = false;
-				ad_stop_rec(recorder);
-				ps_end_utt(decoder);
-				SRERR_PRINTS(SRError::UTT_RESTART_ERR);
-				emit_signal(SR_RUNNER_END_SIGNAL, SRError::UTT_RESTART_ERR);
+				_error_stop(SRError::UTT_RESTART_ERR);
 				return;
 			}
 		}
 	}
 
 	// Stop recording
-	if (ad_stop_rec(recorder) < 0) {
-		SRERR_PRINTS(SRError::REC_STOP_ERR);
-		emit_signal(SR_RUNNER_END_SIGNAL, SRError::REC_STOP_ERR);
-	}
+	if (ad_stop_rec(recorder) < 0)
+		_error_stop(SRError::REC_STOP_ERR);
+}
+
+void SRRunner::_error_stop(SRError::Error err) {
+	SRERR_PRINTS(err);
+
+	ad_stop_rec(config->get_recorder());
+	ps_end_utt(config->get_decoder());
+	emit_signal(SR_RUNNER_END_SIGNAL, err);
+
+	is_running = false;
 }
 
 void SRRunner::set_config(const Ref<SRConfig> &p_config) {
