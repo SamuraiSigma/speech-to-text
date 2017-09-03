@@ -4,74 +4,92 @@
 #include "core/reference.h"
 #include "core/vector.h"
 
-// Default capacity for the keywords queue
-#define DEFAULT_KWS_CAPACITY 100
-
-/*
+/**
  * Wrapper for a queue datatype. Typically stores keywords from speech recognition.
+ *
+ * @author SamuraiSigma
  */
 class SRQueue : public Reference {
 	OBJ_TYPE(SRQueue, Reference);
 
 private:
-	// Queue for storing recognized keywords; operations are thread-safe
+	/**
+	 * Queue for storing recognized keywords; operations are thread-safe
+	 */
 	Vector<String> keywords;
 
-	// Maximum number of keywords that can be stored in the queue
-	int capacity;
+	int capacity;  ///< Maximum number of keywords that can be stored in the queue
 
 protected:
-	/*
-	 * Makes GDScript recognize public methods from this class.
+	/**
+	 * Makes \a GDScript recognize public methods from this class.
 	 */
 	static void _bind_methods();
 
 public:
-	/*
-	 * Removes and returns the first element in the keywords queue.
-	 * If the queue is empty, returns an empty String ("").
+	enum {
+		DEFAULT_KWS_CAPACITY = 100  ///< Default capacity for the keywords queue
+	};
+
+	/**
+	 * Removes and returns the first element in the keywords queue. If the queue is
+	 * empty, returns an empty <tt>String ("")</tt>.
+	 *
+	 * @return The firsst element in the keywords queue, or \c "" if it is empty.
 	 */
 	String get();
 
-	/*
-	 * Adds the specified keyword to the end of the queue, returning true if
-	 * successful.
+	/**
+	 * Adds the specified keyword to the end of the queue, returning \c true if
+	 * successful (i.e., didn't exceed the queue capacity).
+	 *
+	 * @param kw keyword to be added to the queue.
+	 *
+	 * @return \c true if the word was added to the queue, or \c false otherwise.
 	 */
 	bool add(String kw);
 
-	/*
+	/**
 	 * Returns how many keywords are in the queue.
+	 *
+	 * @return Number of keywords in the queue.
 	 */
 	int size();
 
-	/*
-	 * Returns true if the keywords queue is empty, or false otherwise.
+	/**
+	 * Returns \c true if the keywords queue is empty, or \c false otherwise.
+	 *
+	 * @return \c true if the queue is empty, or \c false otherwise.
 	 */
 	bool empty();
 
-	/*
+	/**
 	 * Clears all keywords in the queue, leaving it with a size of 0.
 	 */
 	void clear();
 
-	/*
-	 * Sets the keywords queue capacity as the specified value. Must be >= 0. If
+	/**
+	 * Sets the keywords queue capacity as the specified value. Must be &ge; 0. If
 	 * the new capacity exceeds the current number of elements in the queue, a
 	 * warning message is printed, but no further actions are made.
+	 *
+	 * @param capacity new queue capacity (must be &ge; 0).
 	 */
 	void set_capacity(int capacity);
 
-	/*
+	/**
 	 * Returns the keywords queue capacity.
+	 *
+	 * @return The current queue capacity.
 	 */
 	int get_capacity();
 
-	/*
+	/**
 	 * Initializes queue capacity.
 	 */
 	SRQueue();
 
-	/*
+	/**
 	 * Doesn't actually do anything. :P
 	 */
 	~SRQueue();
