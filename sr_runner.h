@@ -63,12 +63,13 @@ public:
 	 * Creates a thread to repeatedly listen to keywords. The thread can be stopped
 	 * with the stop() method. If start() was previously called, the current thread
 	 * is halted and a new recognition, with the specified arguments, is created.
-	 * Returns one of the following SRError::Error values:
+	 *
+	 * @return One of the following SRError::Error values:
 	 * - \c OK
 	 * - \c UNDEF_CONFIG_ERR
 	 * - \c UNDEF_QUEUE_ERR
 	 *
-	 * Note: The signal \c end_signal is emitted when the thread ends. It contains
+	 * \note The signal \c end_signal is emitted when the thread ends. It contains
 	 * an SRError::Error argument representing what made it stop, which can be one
 	 * of the following values:
 	 * - \c OK
@@ -77,6 +78,9 @@ public:
 	 * - \c UTT_START_ERR
 	 * - \c UTT_RESTART_ERR
 	 * - \c AUDIO_READ_ERR
+	 *
+	 * @see set_config for setting a SRConfig object
+	 * @see set_queue for setting a SRQueue object
 	 */
 	SRError::Error start();
 
