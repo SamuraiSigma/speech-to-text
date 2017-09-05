@@ -13,6 +13,8 @@
 #define STT_RUNNER_END_SIGNAL "stt_thread_end"
 
 /**
+ * Uses STT (Speech to Text) to identify keywords spoken by the user.
+ *
  * Responsible for running speech recognition itself, identifying keywords spoken
  * by the user.
  *
@@ -85,7 +87,8 @@ public:
 	STTError::Error start();
 
 	/**
-	 * Returns true if the speech recognition thread is active, or false otherwise.
+	 * Returns \c true if the speech recognition thread is active, or \c false
+	 * otherwise.
 	 */
 	bool running();
 
@@ -107,7 +110,7 @@ public:
 	 * Returns the STTConfig object containing recognition variables.
 	 *
 	 * @return The currently used STTConfig object for speech recognition, or \c NULL
-	 * if not previously defined
+	 * if not previously defined.
 	 */
 	Ref<STTConfig> get_config() const;
 
@@ -123,7 +126,7 @@ public:
 	 * Returns the STTQueue that stores recognized keywords.
 	 *
 	 * @return The currently used STTQueue object for storing keywords, or \c NULL if
-	 * not previously defined
+	 * not previously defined.
 	 */
 	Ref<STTQueue> get_queue() const;
 
@@ -132,14 +135,14 @@ public:
 	 * specified value. Must be > 0. If the speech recognition thread is currently
 	 * running, it will be stopped.
 	 *
-	 * @param rec_buffer_size microphone recorder buffer size
+	 * @param rec_buffer_size microphone recorder buffer size.
 	 */
 	void set_rec_buffer_size(int rec_buffer_size);
 
 	/**
 	 * Returns the microphone recorder buffer size used for speech recognition.
 	 *
-	 * @return Microphone recorder buffer size
+	 * @return Microphone recorder buffer size.
 	 */
 	int get_rec_buffer_size();
 

@@ -10,6 +10,8 @@
 #define STT_ERR_PRINTS(e) ERR_PRINTS(STTError::get_singleton()->get_error_string(e));
 
 /**
+ * Defines error values returned by some STT-related methods.
+ *
  * Defines error values returned by some speech recognition-related methods, as well
  * as their meanings.
  *

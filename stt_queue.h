@@ -5,6 +5,8 @@
 #include "core/vector.h"
 
 /**
+ * Stores keywords obtained through speech recognition.
+ *
  * Wrapper for a queue datatype. Typically stores keywords from speech recognition.
  *
  * @author SamuraiSigma
@@ -35,7 +37,7 @@ public:
 	 * Removes and returns the first element in the keywords queue. If the queue is
 	 * empty, returns an empty <tt>String ("")</tt>.
 	 *
-	 * @return The firsst element in the keywords queue, or \c "" if it is empty.
+	 * @return The first element in the keywords queue, or \c "" if it is empty.
 	 */
 	String get();
 
@@ -69,16 +71,16 @@ public:
 	void clear();
 
 	/**
-	 * Sets the keywords queue capacity as the specified value. Must be &ge; 0. If
-	 * the new capacity exceeds the current number of elements in the queue, a
-	 * warning message is printed, but no further actions are made.
+	 * Sets the queue capacity as the specified value. Must be &ge; 0. If the new
+	 * capacity exceeds the current number of elements in the queue, a warning
+	 * message is printed, but no further actions are made.
 	 *
 	 * @param capacity new queue capacity (must be &ge; 0).
 	 */
 	void set_capacity(int capacity);
 
 	/**
-	 * Returns the keywords queue capacity.
+	 * Returns the current queue capacity.
 	 *
 	 * @return The current queue capacity.
 	 */
