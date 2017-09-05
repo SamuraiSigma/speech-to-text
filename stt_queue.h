@@ -9,7 +9,7 @@
  *
  * Wrapper for a queue datatype. Typically stores keywords from speech recognition.
  *
- * @author SamuraiSigma
+ * @author Leonardo Macedo
  */
 class STTQueue : public Reference {
 	OBJ_TYPE(STTQueue, Reference);

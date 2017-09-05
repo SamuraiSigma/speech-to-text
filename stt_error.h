@@ -15,7 +15,7 @@
  * Defines error values returned by some speech recognition-related methods, as well
  * as their meanings.
  *
- * @author SamuraiSigma
+ * @author Leonardo Macedo
  */
 class STTError : public Object {
 	OBJ_TYPE(STTError, Object);

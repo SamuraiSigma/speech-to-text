@@ -14,7 +14,7 @@
  * Contains filenames and variables needed for Pocketsphinx speech to text.
  * Instances of this class supply information to STTRunner objects.
  *
- * @author SamuraiSigma
+ * @author Leonardo Macedo
  */
 class STTConfig : public Resource {
 	OBJ_TYPE(STTConfig, Resource);

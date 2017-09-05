@@ -18,7 +18,7 @@
  * Responsible for running speech recognition itself, identifying keywords spoken
  * by the user.
  *
- * @author SamuraiSigma
+ * @author Leonardo Macedo
  */
 class STTRunner : public Node {
 	OBJ_TYPE(STTRunner, Node);
