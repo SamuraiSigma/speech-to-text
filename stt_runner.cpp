@@ -85,6 +85,8 @@ void STTRunner::_recognize() {
 		}
 	}
 
+	ps_end_utt(config->decoder);
+
 	// Stop recording
 	if (ad_stop_rec(config->recorder) < 0)
 		_error_stop(STTError::REC_STOP_ERR);
