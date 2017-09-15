@@ -1,8 +1,8 @@
 #include "stt_config.h"
-#include "core/globals.h"         // Globals::get_singleton()->globalize_path()
-#include "core/os/memory.h"       // memalloc(), memfree()
-#include "core/os/dir_access.h"   // DirAccess::create_for_path()->dir_exists()
-#include "core/os/file_access.h"  // FileAccess::create_for_path()->file_exists()
+#include "core/os/os.h"           // OS::get_singleton()->get_data_dir()
+#include "core/os/memory.h"       // memalloc(), memfree(), memdelete()
+#include "core/os/dir_access.h"   // DirAccess::exists(), open(), copy()
+#include "core/os/file_access.h"  // FileAccess::exists()
 
 /*
  * Adds the -adcdev option as a possible command line argument.
@@ -26,6 +26,10 @@ STTError::Error STTConfig::init() {
 		return STTError::UNDEF_FILES_ERR;
 	}
 
+	_copy_dir_to_user_stt(hmm_dirname);
+	_copy_file_to_user_stt(dict_filename);
+	_copy_file_to_user_stt(kws_filename);
+
 #ifdef DEBUG_ENABLED
 	print_line("[STTConfig HMM directory] '" + hmm_dirname + "'");
 	print_line("[STTConfig dictionary file] '" + dict_filename + "'");
@@ -41,8 +45,7 @@ STTError::Error STTConfig::init() {
 
 	// Convert each filename: String -> wchar_t * -> char *
 	for (int i = 0; i < 3; i++) {
-		// Get path without "res://" stuff
-		names[i] = Globals::get_singleton()->globalize_path(names[i]);
+		names[i] = _convert_to_data_path(names[i]);
 
 		int len = wcstombs(NULL, names[i].c_str(), 0);
 		if (len == -1) {
@@ -106,8 +109,7 @@ STTError::Error STTConfig::init() {
 }
 
 void STTConfig::set_hmm_dirname(String hmm_dirname) {
-	DirAccess *d = DirAccess::create_for_path(hmm_dirname);
-	if (d->dir_exists(hmm_dirname))
+	if (DirAccess::exists(hmm_dirname))
 		this->hmm_dirname = hmm_dirname;
 	else
 		ERR_PRINTS("Directory '" + hmm_dirname + "' not found!");
@@ -118,8 +120,7 @@ String STTConfig::get_hmm_dirname() {
 }
 
 void STTConfig::set_dict_filename(String dict_filename) {
-	FileAccess *f = FileAccess::create_for_path(dict_filename);
-	if (f->file_exists(dict_filename))
+	if (FileAccess::exists(dict_filename))
 		this->dict_filename = dict_filename;
 	else
 		ERR_PRINTS("File '" + dict_filename + "' not found!");
@@ -130,8 +131,7 @@ String STTConfig::get_dict_filename() {
 }
 
 void STTConfig::set_kws_filename(String kws_filename) {
-	FileAccess *f = FileAccess::create_for_path(kws_filename);
-	if (f->file_exists(kws_filename))
+	if (FileAccess::exists(kws_filename))
 		this->kws_filename = kws_filename;
 	else
 		ERR_PRINTS("File '" + kws_filename + "' not found!");
@@ -139,6 +139,66 @@ void STTConfig::set_kws_filename(String kws_filename) {
 
 String STTConfig::get_kws_filename() {
 	return kws_filename;
+}
+
+String STTConfig::_convert_to_data_path(String filename) {
+	String user_path = OS::get_singleton()->get_data_dir();
+	String basename = filename.get_file();
+	return user_path.plus_file(STT_USER_DIRNAME).plus_file(basename);
+}
+
+bool STTConfig::_copy_file_to_user_stt(String filename) {
+	String user_dirname = "user://" + String(STT_USER_DIRNAME);
+	DirAccess *duser = DirAccess::open(user_dirname);
+
+	String basename = filename.get_file();
+	String user_filename = user_dirname.plus_file(basename);
+
+	if (duser->copy(filename, user_filename) != OK) {
+		print_line("Couldn't copy '" + filename + "' to '" + user_filename + "'");
+		memdelete(duser);
+		return false;
+	}
+
+	memdelete(duser);
+	return true;
+}
+
+bool STTConfig::_copy_dir_to_user_stt(String dirname) {
+	String user_dirname = "user://" + String(STT_USER_DIRNAME);
+	String dir_basename = dirname.get_file();
+
+	DirAccess *duser = DirAccess::open(user_dirname);
+	DirAccess *dres = DirAccess::open(dirname);
+
+	duser->make_dir(dir_basename);
+
+	// Copy each file in dirname folder to STT user:// directory
+	dres->list_dir_begin();
+	String filename = dres->get_next();
+	while (filename != "") {
+		if (filename == "." || filename == "..") {
+			filename = dres->get_next();
+			continue;
+		}
+
+		String from = dirname.plus_file(filename);
+		String to = user_dirname.plus_file(dir_basename)
+		                        .plus_file(filename.get_file());
+
+		if (duser->copy(from, to) != OK) {
+			print_line("Couldn't copy '" + from + "' to '" + to + "'");
+			memdelete(dres);
+			memdelete(duser);
+			return false;
+		}
+
+		filename = dres->get_next();
+	}
+
+	memdelete(dres);
+	memdelete(duser);
+	return true;
 }
 
 void STTConfig::_bind_methods() {
@@ -181,6 +241,11 @@ STTConfig::STTConfig() {
 	hmm = NULL;
 	dict = NULL;
 	kws = NULL;
+
+	// Create STT directory in user://
+	DirAccess *da = DirAccess::open("user://");
+	da->make_dir(STT_USER_DIRNAME);
+	memdelete(da);
 }
 
 STTConfig::~STTConfig() {
