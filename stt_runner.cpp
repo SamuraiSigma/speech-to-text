@@ -14,6 +14,8 @@ STTError::Error STTRunner::start() {
 
 	if (is_running) stop();
 	is_running = true;
+
+	reset_run_error();
 	recognition = Thread::create(STTRunner::_thread_recognize, this);
 
 	return STTError::OK;
@@ -97,8 +99,8 @@ void STTRunner::_error_stop(STTError::Error err) {
 
 	ad_stop_rec(config->recorder);
 	ps_end_utt(config->decoder);
-	emit_signal(STT_RUNNER_END_SIGNAL, err);
 
+	run_error = err;
 	is_running = false;
 }
 
@@ -133,6 +135,14 @@ int STTRunner::get_rec_buffer_size() {
 	return rec_buffer_size;
 }
 
+STTError::Error STTRunner::get_run_error() {
+	return run_error;
+}
+
+void STTRunner::reset_run_error() {
+	run_error = STTError::OK;
+}
+
 void STTRunner::_bind_methods() {
 	ObjectTypeDB::bind_method("start",   &STTRunner::start);
 	ObjectTypeDB::bind_method("running", &STTRunner::running);
@@ -147,7 +157,11 @@ void STTRunner::_bind_methods() {
 
 	ObjectTypeDB::bind_method(_MD("set_rec_buffer_size", "size"),
 	                          &STTRunner::set_rec_buffer_size);
-	ObjectTypeDB::bind_method("get_rec_buffer_size", &STTRunner::get_rec_buffer_size);
+	ObjectTypeDB::bind_method("get_rec_buffer_size",
+	                          &STTRunner::get_rec_buffer_size);
+
+	ObjectTypeDB::bind_method("get_run_error",   &STTRunner::get_run_error);
+	ObjectTypeDB::bind_method("reset_run_error", &STTRunner::reset_run_error);
 
 	BIND_CONSTANT(DEFAULT_REC_BUFFER_SIZE);
 
@@ -157,15 +171,13 @@ void STTRunner::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "recorder buffer size (bytes)",
 	                          PROPERTY_HINT_RANGE, "256,4096,32"),
 	             _SCS("set_rec_buffer_size"), _SCS("get_rec_buffer_size"));
-
-	ADD_SIGNAL(MethodInfo(STT_RUNNER_END_SIGNAL,
-	                      PropertyInfo(Variant::INT, "error number")));
 }
 
 STTRunner::STTRunner() {
 	recognition = NULL;
 	is_running = false;
 	rec_buffer_size = DEFAULT_REC_BUFFER_SIZE;
+	reset_run_error();
 }
 
 STTRunner::~STTRunner() {

@@ -8,11 +8,6 @@
 #include "stt_queue.h"
 
 /**
- * Signal emitted when speech to text thread has ended
- */
-#define STT_RUNNER_END_SIGNAL "stt_thread_end"
-
-/**
  * Uses STT (Speech to Text) to identify keywords spoken by the user.
  *
  * Responsible for running speech recognition itself, identifying keywords spoken
@@ -31,6 +26,12 @@ private:
 	Ref<STTQueue> queue;   ///< Queue for storing recognized keywords
 
 	int rec_buffer_size;  ///< Microphone recorder buffer size
+
+	/**
+	 * Stores the last STTError::Error occurred in the speech recognition thread
+	 * (if no error has yet ocurred, then its value is \c OK)
+	 */
+	STTError::Error run_error;
 
 	/**
 	 * Thread wrapper function, calls _recognize() method of its STTRunner argument.
@@ -63,23 +64,16 @@ public:
 
 	/**
 	 * Creates a thread to repeatedly listen to keywords. The thread can be stopped
-	 * with the stop() method. If start() was previously called, the current thread
-	 * is halted and a new recognition, with the specified arguments, is created.
+	 * with stop(). If start() was previously called, the current thread is halted
+	 * and a new recognition, with the specified arguments, is created.
 	 *
 	 * @return One of the following STTError::Error values:
 	 * - \c OK
 	 * - \c UNDEF_CONFIG_ERR
 	 * - \c UNDEF_QUEUE_ERR
 	 *
-	 * \note The signal \c end_signal is emitted when the thread ends. It contains
-	 * an STTError::Error argument representing what made it stop, which can be one
-	 * of the following values:
-	 * - \c OK
-	 * - \c REC_START_ERR
-	 * - \c REC_STOP_ERR
-	 * - \c UTT_START_ERR
-	 * - \c UTT_RESTART_ERR
-	 * - \c AUDIO_READ_ERR
+	 * \note To check for an error that occurred and stopped the thread, see
+	 * get_last_error().
 	 *
 	 * @see set_config for setting a STTConfig object
 	 * @see set_queue for setting a STTQueue object
@@ -145,6 +139,26 @@ public:
 	 * @return Microphone recorder buffer size.
 	 */
 	int get_rec_buffer_size();
+
+	/**
+	 * Returns the STTError::Error value that depicts how the previously running
+	 * speech recognition thread has ended. It can be one of the following values:
+	 * - \c OK
+	 * - \c REC_START_ERR
+	 * - \c REC_STOP_ERR
+	 * - \c UTT_START_ERR
+	 * - \c UTT_RESTART_ERR
+	 * - \c AUDIO_READ_ERR
+	 *
+	 * If no thread was previously run, returns STTError::OK.
+	 */
+	STTError::Error get_run_error();
+
+	/**
+	 * Resets the STTError::Error value that depicts how the previously running
+	 * speech recognition thread has ended, setting its value to STTError::OK.
+	 */
+	void reset_run_error();
 
 	/**
 	 * Initializes attributes.
