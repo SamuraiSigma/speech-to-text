@@ -46,11 +46,10 @@ int STTQueue::get_capacity() {
 }
 
 void STTQueue::_bind_methods() {
-	ObjectTypeDB::bind_method("get",                 &STTQueue::get);
-	ObjectTypeDB::bind_method(_MD("add", "keyword"), &STTQueue::add);
-	ObjectTypeDB::bind_method("size",                &STTQueue::size);
-	ObjectTypeDB::bind_method("empty",               &STTQueue::empty);
-	ObjectTypeDB::bind_method("clear",               &STTQueue::clear);
+	ObjectTypeDB::bind_method("get",   &STTQueue::get);
+	ObjectTypeDB::bind_method("size",  &STTQueue::size);
+	ObjectTypeDB::bind_method("empty", &STTQueue::empty);
+	ObjectTypeDB::bind_method("clear", &STTQueue::clear);
 
 	ObjectTypeDB::bind_method(_MD("set_capacity", "capacity"),
 	                          &STTQueue::set_capacity);
