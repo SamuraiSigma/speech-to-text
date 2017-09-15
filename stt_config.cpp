@@ -207,7 +207,8 @@ bool STTConfig::_copy_dir_to_user_stt(String &dirname) {
 	DirAccess *duser = DirAccess::open(user_dirname);
 	DirAccess *dres = DirAccess::open(dirname);
 
-	if (duser->make_dir(dir_basename) != OK) {
+	// Create directory with same name in user://
+	if (!duser->dir_exists(dir_basename) && duser->make_dir(dir_basename) != OK) {
 		ERR_PRINTS("Couldn't create '" + dir_basename + "' in '" +
 		           user_dirname + "'");
 		memdelete(dres);
@@ -269,7 +270,7 @@ void STTConfig::_bind_methods() {
 }
 
 STTConfig::STTConfig() {
-	// Disable Pocketphinx log output
+	// Disable Pocketsphinx log output
 	err_set_logfp(NULL);
 
 	conf = NULL;
@@ -286,9 +287,9 @@ STTConfig::STTConfig() {
 }
 
 STTConfig::~STTConfig() {
+	if (conf     != NULL) cmd_ln_free_r(conf);
 	if (recorder != NULL) ad_close(recorder);
 	if (decoder  != NULL) ps_free(decoder);
-	if (conf     != NULL) cmd_ln_free_r(conf);
 
 	if (hmm  != NULL) memfree(hmm);
 	if (dict != NULL) memfree(dict);
