@@ -108,46 +108,46 @@ STTError::Error STTConfig::init() {
 	return STTError::OK;
 }
 
-void STTConfig::set_hmm_dirname(String hmm_dirname) {
+void STTConfig::set_hmm_dirname(const String &hmm_dirname) {
 	if (DirAccess::exists(hmm_dirname))
 		this->hmm_dirname = hmm_dirname;
 	else
 		ERR_PRINTS("Directory '" + hmm_dirname + "' not found!");
 }
 
-String STTConfig::get_hmm_dirname() {
+String STTConfig::get_hmm_dirname() const {
 	return hmm_dirname;
 }
 
-void STTConfig::set_dict_filename(String dict_filename) {
+void STTConfig::set_dict_filename(const String &dict_filename) {
 	if (FileAccess::exists(dict_filename))
 		this->dict_filename = dict_filename;
 	else
 		ERR_PRINTS("File '" + dict_filename + "' not found!");
 }
 
-String STTConfig::get_dict_filename() {
+String STTConfig::get_dict_filename() const {
 	return dict_filename;
 }
 
-void STTConfig::set_kws_filename(String kws_filename) {
+void STTConfig::set_kws_filename(const String &kws_filename) {
 	if (FileAccess::exists(kws_filename))
 		this->kws_filename = kws_filename;
 	else
 		ERR_PRINTS("File '" + kws_filename + "' not found!");
 }
 
-String STTConfig::get_kws_filename() {
+String STTConfig::get_kws_filename() const {
 	return kws_filename;
 }
 
-String STTConfig::_convert_to_data_path(String filename) {
+String STTConfig::_convert_to_data_path(String &filename) {
 	String user_path = OS::get_singleton()->get_data_dir();
 	String basename = filename.get_file();
 	return user_path.plus_file(STT_USER_DIRNAME).plus_file(basename);
 }
 
-bool STTConfig::_copy_file_to_user_stt(String filename) {
+bool STTConfig::_copy_file_to_user_stt(String &filename) {
 	String user_dirname = "user://" + String(STT_USER_DIRNAME);
 	DirAccess *duser = DirAccess::open(user_dirname);
 
@@ -164,7 +164,7 @@ bool STTConfig::_copy_file_to_user_stt(String filename) {
 	return true;
 }
 
-bool STTConfig::_copy_dir_to_user_stt(String dirname) {
+bool STTConfig::_copy_dir_to_user_stt(String &dirname) {
 	String user_dirname = "user://" + String(STT_USER_DIRNAME);
 	String dir_basename = dirname.get_file();
 

@@ -44,7 +44,7 @@ private:
 	 *
 	 * @return The corresponding path to \c filename in the STT \c user:// directory.
 	 */
-	String _convert_to_data_path(String filename);
+	String _convert_to_data_path(String &filename);
 
 	/**
 	 * Copies a file with the given \c filename to the STT directory in \c user://.
@@ -52,7 +52,7 @@ private:
 	 *
 	 * @return \c true if file was successfully copied to STT \c user:// directory.
 	 */
-	bool _copy_file_to_user_stt(String filename);
+	bool _copy_file_to_user_stt(String &filename);
 
 	/**
 	 * Copies a directory with the given \c filename to the STT directory in \c
@@ -61,7 +61,7 @@ private:
 	 * @return \c true if directory was successfully copied to STT \c user://
 	 * directory.
 	 */
-	bool _copy_dir_to_user_stt(String filename);
+	bool _copy_dir_to_user_stt(String &filename);
 
 protected:
 	/**
@@ -95,7 +95,7 @@ public:
 	 *
 	 * @param hmm_dirname the HMM directory name.
 	 */
-	void set_hmm_dirname(String hmm_dirname);
+	void set_hmm_dirname(const String &hmm_dirname);
 
 	/**
 	 * Returns the currently defined HMM directory name. If no name has been defined
@@ -103,14 +103,14 @@ public:
 	 *
 	 * @return The current HMM dierctory name, or \c "" if not defined.
 	 */
-	String get_hmm_dirname();
+	String get_hmm_dirname() const;
 
 	/**
 	 * Sets the dictionary filename as the specified value if the file exists.
 	 *
 	 * @param dict_filename the dictionary filename.
 	 */
-	void set_dict_filename(String dict_filename);
+	void set_dict_filename(const String &dict_filename);
 
 	/**
 	 * Returns the currently defined dictionary filename. If no name has been defined
@@ -118,14 +118,14 @@ public:
 	 *
 	 * @return The current dictionary filename, or \c "" if not defined.
 	 */
-	String get_dict_filename();
+	String get_dict_filename() const;
 
 	/**
 	 * Sets the keywords filename as the specified value if the file exists.
 	 *
 	 * @param kws_filename the keywords filename.
 	 */
-	void set_kws_filename(String kws_filename);
+	void set_kws_filename(const String &kws_filename);
 
 	/**
 	 * Returns the currently defined keywords filename. If no name has been defined
@@ -133,7 +133,7 @@ public:
 	 *
 	 * @return The current keywords filename, or \c "" if not defined.
 	 */
-	String get_kws_filename();
+	String get_kws_filename() const;
 
 	/**
 	 * Initializes attributes.
