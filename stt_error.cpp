@@ -13,6 +13,10 @@ String STTError::get_error_string(STTError::Error err) {
 			return "Undefined configuration variable (STTConfig)";
 		case UNDEF_QUEUE_ERR:
 			return "Undefined keywords queue (STTQueue)";
+		case USER_DIR_MAKE_ERR:
+			return "Couldn't create STT directory in user://";
+		case USER_DIR_COPY_ERR:
+			return "Couldn't copy config files to user:// directory";
 		case MULTIBYTE_STR_ERR:
 			return "Couldn't convert filename to a multibyte sequence";
 		case MEM_ALLOC_ERR:
@@ -51,6 +55,8 @@ void STTError::_bind_methods() {
 	BIND_CONSTANT(UNDEF_FILES_ERR);
 	BIND_CONSTANT(UNDEF_CONFIG_ERR);
 	BIND_CONSTANT(UNDEF_QUEUE_ERR);
+	BIND_CONSTANT(USER_DIR_MAKE_ERR);
+	BIND_CONSTANT(USER_DIR_COPY_ERR);
 	BIND_CONSTANT(MULTIBYTE_STR_ERR);
 	BIND_CONSTANT(CONFIG_CREATE_ERR);
 	BIND_CONSTANT(MEM_ALLOC_ERR);

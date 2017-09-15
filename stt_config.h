@@ -47,6 +47,14 @@ private:
 	String _convert_to_data_path(String &filename);
 
 	/**
+	 * Creates an STT directory in \c user://, returning \c true if successful or
+	 * if it already exists.
+	 *
+	 * @return \c true, if STT directory was created or already exists.
+	 */
+	bool _create_stt_user_dir();
+
+	/**
 	 * Copies a file with the given \c filename to the STT directory in \c user://.
 	 * Returns \c true if successful, or \c false otherwise.
 	 *
@@ -78,6 +86,8 @@ public:
 	 * @return One of the following STTError::Error values:
 	 * - \c OK
 	 * - \c UNDEF_FILES_ERR
+	 * - \c USER_DIR_MAKE_ERR
+	 * - \c USER_DIR_COPY_ERR
 	 * - \c MULTIBYTE_STR_ERR
 	 * - \c MEMALLOC_ERR
 	 * - \c CONFIG_CREATE_ERR

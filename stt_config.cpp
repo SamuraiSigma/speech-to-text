@@ -1,7 +1,7 @@
 #include "stt_config.h"
 #include "core/os/os.h"           // OS::get_singleton()->get_data_dir()
 #include "core/os/memory.h"       // memalloc(), memfree(), memdelete()
-#include "core/os/dir_access.h"   // DirAccess::exists(), open(), copy()
+#include "core/os/dir_access.h"   // DirAccess::exists(), open(), copy(), make_dir()
 #include "core/os/file_access.h"  // FileAccess::exists()
 
 /*
@@ -21,19 +21,38 @@ static arg_t cont_args_def[] = {
 };
 
 STTError::Error STTConfig::init() {
+	// Check if files were set
 	if (hmm_dirname == "" || dict_filename == "" || kws_filename == "") {
 		STT_ERR_PRINTS(STTError::UNDEF_FILES_ERR);
 		return STTError::UNDEF_FILES_ERR;
 	}
 
-	_copy_dir_to_user_stt(hmm_dirname);
-	_copy_file_to_user_stt(dict_filename);
-	_copy_file_to_user_stt(kws_filename);
+#ifdef DEBUG_ENABLED
+	print_line("[STTConfig res:// files]");
+	print_line(" - HMM directory: '"   + hmm_dirname   + "'");
+	print_line(" - Dictionary file: '" + dict_filename + "'");
+	print_line(" - Keywords file: '"   + kws_filename  + "'");
+#endif
+
+	// Create STT directory in user://
+	if (!_create_stt_user_dir()) {
+		STT_ERR_PRINTS(STTError::USER_DIR_MAKE_ERR);
+		return STTError::USER_DIR_MAKE_ERR;
+	}
+
+	// Copy config files to STT directory in user://
+	if (!_copy_dir_to_user_stt(hmm_dirname) ||
+			!_copy_file_to_user_stt(dict_filename) ||
+			!_copy_file_to_user_stt(kws_filename)) {
+		STT_ERR_PRINTS(STTError::USER_DIR_COPY_ERR);
+		return STTError::USER_DIR_COPY_ERR;
+	}
 
 #ifdef DEBUG_ENABLED
-	print_line("[STTConfig HMM directory] '" + hmm_dirname + "'");
-	print_line("[STTConfig dictionary file] '" + dict_filename + "'");
-	print_line("[STTConfig keywords file] '" + kws_filename + "'");
+	print_line("[STTConfig user:// files]");
+	print_line(" - HMM directory: '"   + _convert_to_data_path(hmm_dirname)   + "'");
+	print_line(" - Dictionary file: '" + _convert_to_data_path(dict_filename) + "'");
+	print_line(" - Keywords file: '"   + _convert_to_data_path(kws_filename)  + "'");
 #endif
 
 	String names[3];
@@ -147,6 +166,23 @@ String STTConfig::_convert_to_data_path(String &filename) {
 	return user_path.plus_file(STT_USER_DIRNAME).plus_file(basename);
 }
 
+bool STTConfig::_create_stt_user_dir() {
+	DirAccess *da = DirAccess::open("user://");
+	Error err;
+
+	if (da->dir_exists(STT_USER_DIRNAME))
+		err = OK;
+	else {
+		err = da->make_dir(STT_USER_DIRNAME);
+		if (err != OK)
+			ERR_PRINTS("Couldn't create '" + String(STT_USER_DIRNAME) +
+			           "' in user://");
+	}
+
+	memdelete(da);
+	return err == OK;
+}
+
 bool STTConfig::_copy_file_to_user_stt(String &filename) {
 	String user_dirname = "user://" + String(STT_USER_DIRNAME);
 	DirAccess *duser = DirAccess::open(user_dirname);
@@ -155,7 +191,7 @@ bool STTConfig::_copy_file_to_user_stt(String &filename) {
 	String user_filename = user_dirname.plus_file(basename);
 
 	if (duser->copy(filename, user_filename) != OK) {
-		print_line("Couldn't copy '" + filename + "' to '" + user_filename + "'");
+		ERR_PRINTS("Couldn't copy '" + filename + "' to '" + user_filename + "'");
 		memdelete(duser);
 		return false;
 	}
@@ -171,7 +207,13 @@ bool STTConfig::_copy_dir_to_user_stt(String &dirname) {
 	DirAccess *duser = DirAccess::open(user_dirname);
 	DirAccess *dres = DirAccess::open(dirname);
 
-	duser->make_dir(dir_basename);
+	if (duser->make_dir(dir_basename) != OK) {
+		ERR_PRINTS("Couldn't create '" + dir_basename + "' in '" +
+		           user_dirname + "'");
+		memdelete(dres);
+		memdelete(duser);
+		return false;
+	}
 
 	// Copy each file in dirname folder to STT user:// directory
 	dres->list_dir_begin();
@@ -187,7 +229,7 @@ bool STTConfig::_copy_dir_to_user_stt(String &dirname) {
 		                        .plus_file(filename.get_file());
 
 		if (duser->copy(from, to) != OK) {
-			print_line("Couldn't copy '" + from + "' to '" + to + "'");
+			ERR_PRINTS("Couldn't copy '" + from + "' to '" + to + "'");
 			memdelete(dres);
 			memdelete(duser);
 			return false;
@@ -241,11 +283,6 @@ STTConfig::STTConfig() {
 	hmm = NULL;
 	dict = NULL;
 	kws = NULL;
-
-	// Create STT directory in user://
-	DirAccess *da = DirAccess::open("user://");
-	da->make_dir(STT_USER_DIRNAME);
-	memdelete(da);
 }
 
 STTConfig::~STTConfig() {
