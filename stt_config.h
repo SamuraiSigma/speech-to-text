@@ -42,34 +42,11 @@ private:
 	 * Converts the given \c filename to its corresponding path in the STT \c user://
 	 * directory.
 	 *
+	 * @param filename filename to convert to \c user:// path.
+	 *
 	 * @return The corresponding path to \c filename in the STT \c user:// directory.
 	 */
-	String _convert_to_data_path(String &filename);
-
-	/**
-	 * Creates an STT directory in \c user://, returning \c true if successful or
-	 * if it already exists.
-	 *
-	 * @return \c true, if STT directory was created or already exists.
-	 */
-	bool _create_stt_user_dir();
-
-	/**
-	 * Copies a file with the given \c filename to the STT directory in \c user://.
-	 * Returns \c true if successful, or \c false otherwise.
-	 *
-	 * @return \c true if file was successfully copied to STT \c user:// directory.
-	 */
-	bool _copy_file_to_user_stt(String &filename);
-
-	/**
-	 * Copies a directory with the given \c filename to the STT directory in \c
-	 * user://. Returns \c true if successful, or \c false otherwise.
-	 *
-	 * @return \c true if directory was successfully copied to STT \c user://
-	 * directory.
-	 */
-	bool _copy_dir_to_user_stt(String &filename);
+	String _convert_to_data_path(String filename);
 
 protected:
 	/**

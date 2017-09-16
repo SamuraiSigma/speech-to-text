@@ -16,7 +16,8 @@ stt_srcs = [
     "stt_config.cpp",
     "stt_queue.cpp",
     "stt_runner.cpp",
-    "stt_error.cpp"
+    "stt_error.cpp",
+    "file_dir_util.cpp"
 ]
 
 # ---------------------------------------------------------------------

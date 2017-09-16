@@ -1,7 +1,9 @@
 #include "stt_config.h"
+#include "file_dir_util.h"
+
 #include "core/os/os.h"           // OS::get_singleton()->get_data_dir()
 #include "core/os/memory.h"       // memalloc(), memfree(), memdelete()
-#include "core/os/dir_access.h"   // DirAccess::exists(), open(), copy(), make_dir()
+#include "core/os/dir_access.h"   // DirAccess::exists()
 #include "core/os/file_access.h"  // FileAccess::exists()
 
 /*
@@ -34,38 +36,42 @@ STTError::Error STTConfig::init() {
 	print_line(" - Keywords file: '"   + kws_filename  + "'");
 #endif
 
+	String user_dirname = "user://" + String(STT_USER_DIRNAME);
+
 	// Create STT directory in user://
-	if (!_create_stt_user_dir()) {
+	if (!FileDirUtil::create_dir_safe("user://", STT_USER_DIRNAME)) {
 		STT_ERR_PRINTS(STTError::USER_DIR_MAKE_ERR);
 		return STTError::USER_DIR_MAKE_ERR;
 	}
 
 	// Copy config files to STT directory in user://
-	if (!_copy_dir_to_user_stt(hmm_dirname) ||
-			!_copy_file_to_user_stt(dict_filename) ||
-			!_copy_file_to_user_stt(kws_filename)) {
+	if (!FileDirUtil::copy_recursive_dir(hmm_dirname, user_dirname) ||
+			!FileDirUtil::copy_file(dict_filename, user_dirname) ||
+			!FileDirUtil::copy_file(kws_filename, user_dirname)) {
 		STT_ERR_PRINTS(STTError::USER_DIR_COPY_ERR);
 		return STTError::USER_DIR_COPY_ERR;
 	}
 
+	String user_hmm_dirname = _convert_to_data_path(hmm_dirname);
+	String user_dict_filename = _convert_to_data_path(dict_filename);
+	String user_kws_filename = _convert_to_data_path(kws_filename);
+
 #ifdef DEBUG_ENABLED
 	print_line("[STTConfig user:// files]");
-	print_line(" - HMM directory: '"   + _convert_to_data_path(hmm_dirname)   + "'");
-	print_line(" - Dictionary file: '" + _convert_to_data_path(dict_filename) + "'");
-	print_line(" - Keywords file: '"   + _convert_to_data_path(kws_filename)  + "'");
+	print_line(" - HMM directory: '"   + user_hmm_dirname   + "'");
+	print_line(" - Dictionary file: '" + user_dict_filename + "'");
+	print_line(" - Keywords file: '"   + user_kws_filename  + "'");
 #endif
 
 	String names[3];
-	names[0] = hmm_dirname;
-	names[1] = dict_filename;
-	names[2] = kws_filename;
+	names[0] = user_hmm_dirname;
+	names[1] = user_dict_filename;
+	names[2] = user_kws_filename;
 
 	char *convert[3];
 
 	// Convert each filename: String -> wchar_t * -> char *
 	for (int i = 0; i < 3; i++) {
-		names[i] = _convert_to_data_path(names[i]);
-
 		int len = wcstombs(NULL, names[i].c_str(), 0);
 		if (len == -1) {
 			STT_ERR_PRINTS(STTError::MULTIBYTE_STR_ERR);
@@ -160,88 +166,10 @@ String STTConfig::get_kws_filename() const {
 	return kws_filename;
 }
 
-String STTConfig::_convert_to_data_path(String &filename) {
+String STTConfig::_convert_to_data_path(String filename) {
 	String user_path = OS::get_singleton()->get_data_dir();
 	String basename = filename.get_file();
 	return user_path.plus_file(STT_USER_DIRNAME).plus_file(basename);
-}
-
-bool STTConfig::_create_stt_user_dir() {
-	DirAccess *da = DirAccess::open("user://");
-	Error err;
-
-	if (da->dir_exists(STT_USER_DIRNAME))
-		err = OK;
-	else {
-		err = da->make_dir(STT_USER_DIRNAME);
-		if (err != OK)
-			ERR_PRINTS("Couldn't create '" + String(STT_USER_DIRNAME) +
-			           "' in user://");
-	}
-
-	memdelete(da);
-	return err == OK;
-}
-
-bool STTConfig::_copy_file_to_user_stt(String &filename) {
-	String user_dirname = "user://" + String(STT_USER_DIRNAME);
-	DirAccess *duser = DirAccess::open(user_dirname);
-
-	String basename = filename.get_file();
-	String user_filename = user_dirname.plus_file(basename);
-
-	if (duser->copy(filename, user_filename) != OK) {
-		ERR_PRINTS("Couldn't copy '" + filename + "' to '" + user_filename + "'");
-		memdelete(duser);
-		return false;
-	}
-
-	memdelete(duser);
-	return true;
-}
-
-bool STTConfig::_copy_dir_to_user_stt(String &dirname) {
-	String user_dirname = "user://" + String(STT_USER_DIRNAME);
-	String dir_basename = dirname.get_file();
-
-	DirAccess *duser = DirAccess::open(user_dirname);
-	DirAccess *dres = DirAccess::open(dirname);
-
-	// Create directory with same name in user://
-	if (!duser->dir_exists(dir_basename) && duser->make_dir(dir_basename) != OK) {
-		ERR_PRINTS("Couldn't create '" + dir_basename + "' in '" +
-		           user_dirname + "'");
-		memdelete(dres);
-		memdelete(duser);
-		return false;
-	}
-
-	// Copy each file in dirname folder to STT user:// directory
-	dres->list_dir_begin();
-	String filename = dres->get_next();
-	while (filename != "") {
-		if (filename == "." || filename == "..") {
-			filename = dres->get_next();
-			continue;
-		}
-
-		String from = dirname.plus_file(filename);
-		String to = user_dirname.plus_file(dir_basename)
-		                        .plus_file(filename.get_file());
-
-		if (duser->copy(from, to) != OK) {
-			ERR_PRINTS("Couldn't copy '" + from + "' to '" + to + "'");
-			memdelete(dres);
-			memdelete(duser);
-			return false;
-		}
-
-		filename = dres->get_next();
-	}
-
-	memdelete(dres);
-	memdelete(duser);
-	return true;
 }
 
 void STTConfig::_bind_methods() {
