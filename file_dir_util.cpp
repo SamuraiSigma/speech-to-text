@@ -35,7 +35,7 @@ bool FileDirUtil::copy_file(String from, String to) {
 	return true;
 }
 
-bool FileDirUtil::copy_recursive_dir(String from, String to) {
+bool FileDirUtil::copy_dir_recursive(String from, String to) {
 	String dirname = from.get_file();
 
 	DirAccess *dfrom = DirAccess::open(from);
@@ -58,9 +58,9 @@ bool FileDirUtil::copy_recursive_dir(String from, String to) {
 			continue;
 		}
 
-		// If file is actually a directory, recursively copy everything in it
+		// If filename is actually a directory, recursively copy everything in it
 		if (dfrom->dir_exists(filename))
-			copy_recursive_dir(from.plus_file(filename), to.plus_file(dirname));
+			copy_dir_recursive(from.plus_file(filename), to.plus_file(dirname));
 		// Regular file; copy normally
 		else if (!copy_file(from.plus_file(filename), to.plus_file(dirname))) {
 			memdelete(dfrom);
@@ -74,4 +74,45 @@ bool FileDirUtil::copy_recursive_dir(String from, String to) {
 	memdelete(dfrom);
 	memdelete(dto);
 	return true;
+}
+
+bool FileDirUtil::remove_dir_recursive(String dirname) {
+	DirAccess *da = DirAccess::open(dirname);
+
+	if (!DirAccess::exists(dirname)) {
+		ERR_PRINTS("Directory '" + dirname + "' not found");
+		memdelete(da);
+		return false;
+	}
+
+	// Remove all files/directories in "dirname" directory
+	da->list_dir_begin();
+	String filename = da->get_next();
+	while (filename != "") {
+		// Ignore "." and ".." filenames
+		if (filename == "." || filename == "..") {
+			filename = da->get_next();
+			continue;
+		}
+
+		// If filename is actually a directory, recursively remove everything in it
+		if (da->dir_exists(filename))
+			remove_dir_recursive(dirname.plus_file(filename));
+		// Regular file; remove normally
+		else if (da->remove(filename) != OK) {
+			ERR_PRINTS("Couldn't delete '" + filename + "' in '" + dirname + "'");
+			memdelete(da);
+			return false;
+		}
+
+		filename = da->get_next();
+	}
+
+	// Delete empty "dirname" directory
+	Error err = da->remove(dirname);
+	if (err != OK)
+		ERR_PRINTS("Couldn't delete '" + dirname + "'");
+
+	memdelete(da);
+	return err == OK;
 }

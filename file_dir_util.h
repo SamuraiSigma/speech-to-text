@@ -49,7 +49,19 @@ public:
 	 * @return \c true if directory \c from and its contents were successfully copied
 	 * to \c to directory, or \c false otherwise.
 	 */
-	static bool copy_recursive_dir(String from, String to);
+	static bool copy_dir_recursive(String from, String to);
+
+	/**
+	 * Deletes the directory with the specified name, recursively removing all files
+	 * and directories in it. Returns \c true if successful, or \c false if an error
+	 * occurred or the directory doesn't exist.
+	 *
+	 * @param dirname Directory to be deleted.
+
+	 * @return \c true if \c dirname directory was successfully deleted, or \c false
+	 * otherwise.
+	 */
+	static bool remove_dir_recursive(String dirname);
 };
 
 #endif  // FILE_DIR_UTIL_H

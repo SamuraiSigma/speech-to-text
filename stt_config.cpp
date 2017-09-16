@@ -45,7 +45,7 @@ STTError::Error STTConfig::init() {
 	}
 
 	// Copy config files to STT directory in user://
-	if (!FileDirUtil::copy_recursive_dir(hmm_dirname, user_dirname) ||
+	if (!FileDirUtil::copy_dir_recursive(hmm_dirname, user_dirname) ||
 			!FileDirUtil::copy_file(dict_filename, user_dirname) ||
 			!FileDirUtil::copy_file(kws_filename, user_dirname)) {
 		STT_ERR_PRINTS(STTError::USER_DIR_COPY_ERR);
