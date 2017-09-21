@@ -1,18 +1,22 @@
-#include "sr_error.h"
+#include "stt_error.h"
 
-// Defines a reference to SRError::singleton
-SRError *SRError::singleton = NULL;
+// Defines a reference to STTError::singleton
+STTError *STTError::singleton = NULL;
 
-String SRError::get_error_string(SRError::Error err) {
+String STTError::get_error_string(STTError::Error err) {
 	switch (err) {
 		case OK:
 			return "All is well :)";
 		case UNDEF_FILES_ERR:
 			return "One or more file/directory names aren't defined";
 		case UNDEF_CONFIG_ERR:
-			return "Undefined configuration variable (SRConfig)";
+			return "Undefined configuration variable (STTConfig)";
 		case UNDEF_QUEUE_ERR:
-			return "Undefined keywords queue (SRQueue)";
+			return "Undefined keywords queue (STTQueue)";
+		case USER_DIR_MAKE_ERR:
+			return "Couldn't create STT directory in user://";
+		case USER_DIR_COPY_ERR:
+			return "Couldn't copy config files to user:// directory";
 		case MULTIBYTE_STR_ERR:
 			return "Couldn't convert filename to a multibyte sequence";
 		case MEM_ALLOC_ERR:
@@ -39,18 +43,20 @@ String SRError::get_error_string(SRError::Error err) {
 	return "No corresponding String for error number " + err_number;
 }
 
-SRError * SRError::get_singleton() {
+STTError * STTError::get_singleton() {
 	return singleton;
 }
 
-void SRError::_bind_methods() {
+void STTError::_bind_methods() {
 	ObjectTypeDB::bind_method(_MD("get_error_string", "error_number"),
-	                          &SRError::get_error_string);
+	                          &STTError::get_error_string);
 
 	BIND_CONSTANT(OK);
 	BIND_CONSTANT(UNDEF_FILES_ERR);
 	BIND_CONSTANT(UNDEF_CONFIG_ERR);
 	BIND_CONSTANT(UNDEF_QUEUE_ERR);
+	BIND_CONSTANT(USER_DIR_MAKE_ERR);
+	BIND_CONSTANT(USER_DIR_COPY_ERR);
 	BIND_CONSTANT(MULTIBYTE_STR_ERR);
 	BIND_CONSTANT(CONFIG_CREATE_ERR);
 	BIND_CONSTANT(MEM_ALLOC_ERR);
@@ -63,8 +69,8 @@ void SRError::_bind_methods() {
 	BIND_CONSTANT(AUDIO_READ_ERR);
 }
 
-SRError::SRError() {
+STTError::STTError() {
 	singleton = this;
 }
 
-SRError::~SRError() {}
+STTError::~STTError() {}

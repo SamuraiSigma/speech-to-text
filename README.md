@@ -1,6 +1,6 @@
 # Third party libraries
 
-The below third party libraries were used in this *speech_recognizer* module.
+The below third party libraries were used in this **Speech to Text** module.
 
 
 ## sphinxbase

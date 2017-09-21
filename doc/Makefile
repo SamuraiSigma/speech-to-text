@@ -1,4 +1,4 @@
-# Generates documentation for the Speech Recognizer module
+# Generates documentation for the Speech to Text module
 
 OUTDIR = _build
 

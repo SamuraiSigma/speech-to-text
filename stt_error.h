@@ -1,22 +1,24 @@
-#ifndef SR_ERROR_H
-#define SR_ERROR_H
+#ifndef STT_ERROR_H
+#define STT_ERROR_H
 
 #include "core/object.h"
 #include "core/ustring.h"
 
 /**
- * Shortcut for printing SRError::Error values with \c ERR_PRINT()
+ * Shortcut for printing STTError::Error values with \c ERR_PRINT()
  */
-#define SRERR_PRINTS(e) ERR_PRINTS(SRError::get_singleton()->get_error_string(e));
+#define STT_ERR_PRINTS(e) ERR_PRINTS(STTError::get_singleton()->get_error_string(e));
 
 /**
+ * Defines error values returned by some STT-related methods.
+ *
  * Defines error values returned by some speech recognition-related methods, as well
  * as their meanings.
  *
- * @author SamuraiSigma
+ * @author Leonardo Macedo
  */
-class SRError : public Object {
-	OBJ_TYPE(SRError, Object);
+class STTError : public Object {
+	OBJ_TYPE(STTError, Object);
 
 public:
 	/**
@@ -26,8 +28,10 @@ public:
 	enum Error {
 		OK,                 ///< No error occurred
 		UNDEF_FILES_ERR,    ///< One or more file/directory names aren't defined
-		UNDEF_CONFIG_ERR,   ///< Undefined configuration variable (SRConfig)
-		UNDEF_QUEUE_ERR,    ///< Undefined keywords queue (SRQueue)
+		UNDEF_CONFIG_ERR,   ///< Undefined configuration variable (STTConfig)
+		UNDEF_QUEUE_ERR,    ///< Undefined keywords queue (STTQueue)
+		USER_DIR_MAKE_ERR,  ///< Couldn't create STT directory in \c user://
+		USER_DIR_COPY_ERR,  ///< Couldn't copy config files to \c user:// directory
 		MULTIBYTE_STR_ERR,  ///< Couldn't convert filename to a multibyte sequence
 		MEM_ALLOC_ERR,      ///< No memory available for allocation
 		CONFIG_CREATE_ERR,  ///< Couldn't create Pocketsphinx configuration variable
@@ -41,7 +45,7 @@ public:
 	};
 
 protected:
-	static SRError *singleton;  ///< Singleton for this class's only instance.
+	static STTError *singleton;  ///< Singleton for this class's only instance.
 
 	/**
 	 * Makes \a GDScript recognize public methods and the enum from this class.
@@ -54,7 +58,7 @@ public:
 	 *
 	 * @return This class's singleton.
 	 */
-	static SRError * get_singleton();
+	static STTError * get_singleton();
 
 	/**
 	 * Returns a short \c String explaining the given Error value.
@@ -68,15 +72,15 @@ public:
 	/**
 	 * Initializes the class's singleton.
 	 */
-	SRError();
+	STTError();
 
 	/**
 	 * Doesn't actually do anything. :P
 	 */
-	~SRError();
+	~STTError();
 };
 
 // Makes the enum work when binding to methods
-VARIANT_ENUM_CAST(SRError::Error);
+VARIANT_ENUM_CAST(STTError::Error);
 
-#endif  // SR_ERROR_H
+#endif  // STT_ERROR_H

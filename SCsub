@@ -11,12 +11,13 @@ module_env.Append(CFLAGS=module_flags)
 
 # ---------------------------------------------------------------------
 
-sr_srcs = [
+stt_srcs = [
     "register_types.cpp",
-    "sr_config.cpp",
-    "sr_queue.cpp",
-    "sr_runner.cpp",
-    "sr_error.cpp"
+    "stt_config.cpp",
+    "stt_queue.cpp",
+    "stt_runner.cpp",
+    "stt_error.cpp",
+    "file_dir_util.cpp"
 ]
 
 # ---------------------------------------------------------------------
@@ -84,7 +85,7 @@ if (env["pulseaudio"] == "yes"):
 elif os.system("pkg-config --exists alsa") == 0:
     base_srcs.append("libsphinxad/ad_alsa.c")
 else:
-    print("[Speech Recognizer] Error: No PulseAudio or ALSA support found!")
+    print("[Speech to Text] Error: No PulseAudio or ALSA support found!")
     Exit(1)
 
 # Add path to Sphinxbase include/ folder
@@ -141,14 +142,14 @@ module_env.Append(CPPPATH=pocket_dir + "/" + "include")
 
 # ---------------------------------------------------------------------
 
-all_srcs = base_srcs + pocket_srcs + sr_srcs
+all_srcs = base_srcs + pocket_srcs + stt_srcs
 
-if ARGUMENTS.get('speech_recognizer_shared', 'no') == 'yes':
+if ARGUMENTS.get('speech_to_text_shared', 'no') == 'yes':
     # Shared lib compilation
     module_env.Append(CXXFLAGS='-fPIC')  # Shared library flag
     module_env['LIBS'] = []
 
-    shared_lib = module_env.SharedLibrary(target='#bin/speech_recognizer',
+    shared_lib = module_env.SharedLibrary(target='#bin/speech_to_text',
                                           source=all_srcs)
 
     # Notify main env of new library dependency

@@ -1,24 +1,29 @@
-#ifndef SR_CONFIG_H
-#define SR_CONFIG_H
+#ifndef STT_CONFIG_H
+#define STT_CONFIG_H
 
 #include "core/resource.h"
-#include "sr_error.h"
+#include "stt_error.h"
 
 #include "sphinxbase/err.h"
 #include "sphinxbase/ad.h"
 #include "pocketsphinx.h"
 
 /**
- * Stores filenames and variables for Pocketsphinx speech recognition.
- *
- * Contains filenames and variables needed for Pocketsphinx speech recognition.
- * Instances of this class supply information to SRRunner objects.
- *
- * @author SamuraiSigma
+ * Directory, in \c user://, where config files are copied
  */
-class SRConfig : public Resource {
-	OBJ_TYPE(SRConfig, Resource);
-	friend class SRRunner;
+#define STT_USER_DIRNAME "stt/"
+
+/**
+ * Stores filenames and variables for Pocketsphinx speech to text.
+ *
+ * Contains filenames and variables needed for Pocketsphinx speech to text.
+ * Instances of this class supply information to STTRunner objects.
+ *
+ * @author Leonardo Macedo
+ */
+class STTConfig : public Resource {
+	OBJ_TYPE(STTConfig, Resource);
+	friend class STTRunner;
 
 private:
 	cmd_ln_t *conf;         ///< Configuration type for Sphinx variables
@@ -33,6 +38,16 @@ private:
 	char *dict;  ///< C string path for dict_filename
 	char *kws;   ///< C string path for kws_filename
 
+	/**
+	 * Converts the given \c filename to its corresponding path in the STT \c user://
+	 * directory.
+	 *
+	 * @param filename filename to convert to \c user:// path.
+	 *
+	 * @return The corresponding path to \c filename in the STT \c user:// directory.
+	 */
+	String _convert_to_data_path(String filename);
+
 protected:
 	/**
 	 * Makes \a GDScript recognize public methods from this class.
@@ -41,13 +56,15 @@ protected:
 
 public:
 	/**
-	 * Initializes \a Pocketsphinx speech recognition variables. The attributes for
+	 * Initializes \a Pocketsphinx speech to text variables. The attributes for
 	 * HMM directory name, dictionary filename and keywords filename must have been
 	 * previously defined with the appropriate setters.
 	 *
-	 * @return One of the following SRError::Error values:
+	 * @return One of the following STTError::Error values:
 	 * - \c OK
 	 * - \c UNDEF_FILES_ERR
+	 * - \c USER_DIR_MAKE_ERR
+	 * - \c USER_DIR_COPY_ERR
 	 * - \c MULTIBYTE_STR_ERR
 	 * - \c MEMALLOC_ERR
 	 * - \c CONFIG_CREATE_ERR
@@ -58,14 +75,14 @@ public:
 	 * @see set_dict_filename for setting the dictionary filename
 	 * @see set_kws_filename for setting the keywords filename
 	 */
-	SRError::Error init();
+	STTError::Error init();
 
 	/**
 	 * Sets the HMM directory name as the specified value if the directory exists.
 	 *
 	 * @param hmm_dirname the HMM directory name.
 	 */
-	void set_hmm_dirname(String hmm_dirname);
+	void set_hmm_dirname(const String &hmm_dirname);
 
 	/**
 	 * Returns the currently defined HMM directory name. If no name has been defined
@@ -73,14 +90,14 @@ public:
 	 *
 	 * @return The current HMM dierctory name, or \c "" if not defined.
 	 */
-	String get_hmm_dirname();
+	String get_hmm_dirname() const;
 
 	/**
 	 * Sets the dictionary filename as the specified value if the file exists.
 	 *
 	 * @param dict_filename the dictionary filename.
 	 */
-	void set_dict_filename(String dict_filename);
+	void set_dict_filename(const String &dict_filename);
 
 	/**
 	 * Returns the currently defined dictionary filename. If no name has been defined
@@ -88,14 +105,14 @@ public:
 	 *
 	 * @return The current dictionary filename, or \c "" if not defined.
 	 */
-	String get_dict_filename();
+	String get_dict_filename() const;
 
 	/**
 	 * Sets the keywords filename as the specified value if the file exists.
 	 *
 	 * @param kws_filename the keywords filename.
 	 */
-	void set_kws_filename(String kws_filename);
+	void set_kws_filename(const String &kws_filename);
 
 	/**
 	 * Returns the currently defined keywords filename. If no name has been defined
@@ -103,17 +120,17 @@ public:
 	 *
 	 * @return The current keywords filename, or \c "" if not defined.
 	 */
-	String get_kws_filename();
+	String get_kws_filename() const;
 
 	/**
 	 * Initializes attributes.
 	 */
-	SRConfig();
+	STTConfig();
 
 	/**
 	 * Clears memory used by the object.
 	 */
-	~SRConfig();
+	~STTConfig();
 };
 
-#endif  // SR_CONFIG_H
+#endif  // STT_CONFIG_H
