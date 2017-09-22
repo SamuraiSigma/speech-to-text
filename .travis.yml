@@ -97,12 +97,7 @@ before_script:
 
   # Clone Godot on latest stable release and copy module there
   - git clone "$GODOT_REPO" godot --branch "$GODOT_STABLE_TAG" --single-branch
-
-  - mkdir -p godot/modules/speech_to_text
-
-  # Copy all files/folders (except godot/) into godot/
-  - find . -maxdepth 1 ! -name godot ! -name . -exec cp -rft godot/modules/speech_to_text {} +
-
+  - cp -rf speech_to_text godot/modules
   - cd godot
 
 script:
