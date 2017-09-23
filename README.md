@@ -6,7 +6,7 @@ Speech to Text module for Godot
 This is a Speech to Text (STT) module for [Godot][godot]. In other words, a module
 that captures the user's microphone input and converts it to text.
 
-[godot]: https://godotengine.org
+[godot]: https://godotengine.org "Godot site"
 
 
 Requirements
@@ -24,8 +24,8 @@ input.
 I've tested it successfully on Godot 2.1.3 and 2.1.4 builds. Godot's repository can
 be found [here][godotRepo].
 
-[godotUnixReq]: http://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html
-[godotRepo]: https://github.com/godotengine/godot
+[godotUnixReq]: http://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html "Requirements for Godot on Unix systems"
+[godotRepo]: https://github.com/godotengine/godot "Godot repository"
 
 
 Building *Godot* with the module
@@ -77,8 +77,8 @@ Usage
 Check the html tutorial [here][sttTutorial], which was created on my Godot Docs
 [fork][godotDocsFork], for more information on how to use the module.
 
-[sttTutorial]: https://samuraisigma.github.io/godot-docs/doc/community/tutorials/misc/speech_to_text.html
-[godotDocsFork]: https://github.com/SamuraiSigma/godot-docs
+[sttTutorial]: https://samuraisigma.github.io/godot-docs/doc/community/tutorials/misc/speech_to_text.html "Speech to Text module tutorial"
+[godotDocsFork]: https://github.com/SamuraiSigma/godot-docs "My Godot Docs fork"
 
 
 Demo: Color Clutter
@@ -101,4 +101,4 @@ its project directory:
 
 Instructions on how to play are in the repository's `README.md` file.
 
-[colorClutterRepo]: https://github.com/SamuraiSigma/color-clutter
+[colorClutterRepo]: https://github.com/SamuraiSigma/color-clutter "Color Clutter repository"
