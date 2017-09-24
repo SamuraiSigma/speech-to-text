@@ -5,6 +5,9 @@ Import('env')
 
 module_env = env.Clone()
 
+# Platform name
+platform = env["platform"] or env["p"]
+
 # -DHAVE_CONFIG_H allows compiling of libsphinxbase/util source files
 module_flags = ['-O3', '-Wall', '-Wno-unused-result', '-DHAVE_CONFIG_H']
 module_env.Append(CFLAGS=module_flags)
@@ -79,13 +82,22 @@ base_srcs = [
     "libsphinxbase/lm/jsgf_scanner.c"
 ]
 
-# Use Pulseaudio or Alsa as sound driver
-if (env["pulseaudio"] == "yes"):
-    base_srcs.append("libsphinxad/ad_pulse.c")
-elif os.system("pkg-config --exists alsa") == 0:
-    base_srcs.append("libsphinxad/ad_alsa.c")
+# Platform-specific files
+if platform == "x11":
+    # Use PulseAudio or ALSA as sound driver
+    if (env["pulseaudio"] == "yes"):
+        base_srcs.append("libsphinxad/ad_pulse.c")
+    elif os.system("pkg-config --exists alsa") == 0:
+        base_srcs.append("libsphinxad/ad_alsa.c")
+    else:
+        print("[Speech to Text] Error: No PulseAudio or ALSA support found!")
+        Exit(1)
+
+elif platform == "windows":
+    base_srcs.append("libsphinxad/ad_win32.c")
+
 else:
-    print("[Speech to Text] Error: No PulseAudio or ALSA support found!")
+    print("[Speech to Text] Error: Platform '" + platform + "' not supported!")
     Exit(1)
 
 # Add path to Sphinxbase include/ folder

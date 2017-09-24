@@ -12,10 +12,13 @@ that captures the user's microphone input and converts it to text.
 Requirements
 ------------
 
-The module only works on **Unix** systems that have **Pulseaudio** or **Alsa**
-support.
+The module works on the following platforms:
 
-Check if your system fulfills Godot's building [requirements][godotUnixReq] on Unix.
+- Windows
+- Unix (with **PulseAudio** or **ALSA** requirement)
+
+Check if your system fulfills Godot's building [requirements][compilingReq] on the
+desired platform, or for cross-compiling to another system.
 
 Other than that, *Speech to Text* has no additional requirements. It is intended to
 be used alongside a microphone connected to the system, which will capture voice
@@ -24,14 +27,15 @@ input.
 I've tested it successfully on Godot 2.1.3 and 2.1.4 builds. Godot's repository can
 be found [here][godotRepo].
 
-[godotUnixReq]: http://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html "Requirements for Godot on Unix systems"
+[compilingReq]: http://docs.godotengine.org/en/stable/development/compiling/index.html "Compiling Requirements"
 [godotRepo]: https://github.com/godotengine/godot "Godot repository"
 
 
 Building *Godot* with the module
 --------------------------------
 
-The following steps assume that you are on a **Unix** system.
+The following steps assume that you are on a **Unix** system. For a different
+platform supported by the module, use the equivalent tools.
 
 1. If you don't have the source code for Godot, clone its repository from GitHub.
 
@@ -47,7 +51,9 @@ The following steps assume that you are on a **Unix** system.
 
 4. Build Godot. Go to the root of your Godot source and type:
 
-       $ scons platform=x11
+       $ scons platform=<my_platform>
+
+   where `<my_platform>` can be `windows` or `x11` (*Unix*).
 
 5. Run Godot:
 
@@ -88,7 +94,8 @@ Demo: Color Clutter
 a demo for the module.
 
 If you wish to do a quick test, follow the instructions below to run the game from
-its project directory:
+its project directory. Once again, the instructions suppose that you are on a
+**Unix** system, but equivalent commands on other platforms should work.
 
 1. Clone the game's repository.
 
