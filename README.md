@@ -31,7 +31,7 @@ be found [here][godotRepo].
 [godotRepo]: https://github.com/godotengine/godot "Godot repository"
 
 
-Building *Godot* with the module
+Building Godot with the module
 --------------------------------
 
 The following steps assume that you are on a **Unix** system. For a different
@@ -87,6 +87,19 @@ Check the html tutorial [here][sttTutorial], which was created on my Godot Docs
 [godotDocsFork]: https://github.com/SamuraiSigma/godot-docs "My Godot Docs fork"
 
 
+Export templates
+----------------
+
+If you wish to export a game that uses the *Speech to Text* module, you will first
+need to build export templates for the desired platform.
+
+Check the instructions and requirements on the Godot Docs [site][exportTemplates] to
+learn how to build export templates for a specific system. This includes cross
+compiling for opposite bits or even for a different platform.
+
+[exportTemplates]: http://docs.godotengine.org/en/stable/development/compiling/index.html "Building export templates"
+
+
 Demo: Color Clutter
 -------------------
 
@@ -101,7 +114,7 @@ its project directory. Once again, the instructions suppose that you are on a
 
        $ git clone https://github.com/SamuraiSigma/color-clutter
 
-2. After building *Godot*, run it with the directory created in the last step as the
+2. After building Godot, run it with the directory created in the last step as the
    `-path` argument.
 
        $ ./bin/godot*tools* -path <color_clutter_directory>
