@@ -62,20 +62,20 @@ platform supported by the module, use the equivalent tools.
 
 6. In order to check if the module was successfully added, follow these final steps:
 
-  6.1. After opening Godot, click the **New Project** button on the right side to
-  open the **Create New Project** window.
+   6.1. After opening Godot, click the **New Project** button on the right side to
+        open the **Create New Project** window.
 
-  6.2. On the new window, add a **Project Path** (I'd recommend an empty directory)
-  and a **Project Name** (you are free to choose as you like).
+   6.2. On the new window, add a **Project Path** (I'd recommend an empty directory)
+        and a **Project Name** (you are free to choose as you like).
 
-  6.3. Click **Create** to open the Godot project editor window.
+   6.3. Click **Create** to open the Godot project editor window.
 
-  6.4. On the right side, there should be a **Scene** tab with a window below it.
-  Click the first icon below the **Scene** label, which has a plus symbol `+`,
-  to create a new node.
+   6.4. On the right side, there should be a **Scene** tab with a window below it.
+        Click the first icon below the **Scene** label, which has a plus symbol `+`,
+        to create a new node.
 
-  6.5. Check if the ***STTRunner*** appears in the list of nodes; it should probably
-  be near the end of the list. There is also a search bar for convenience.
+   6.5. Check if the ***STTRunner*** appears in the list of nodes; it should probably
+        be near the end of the list. There is also a search bar for convenience.
 
 
 Usage
