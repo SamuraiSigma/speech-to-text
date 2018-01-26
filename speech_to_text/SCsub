@@ -98,6 +98,9 @@ if platform == "x11":
 elif platform == "windows":
     base_srcs.append("libsphinxad/ad_win32.c")
 
+elif platform == "osx":
+    base_srcs.append("libsphinxad/ad_base.c")
+
 else:
     print("[Speech to Text] Error: Platform '" + platform + "' not supported!")
     Exit(1)
