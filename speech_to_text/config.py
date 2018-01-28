@@ -6,7 +6,7 @@ def can_build(platform):
         has_pulse = os.system("pkg-config --exists libpulse-simple") == 0
         has_alsa = os.system("pkg-config --exists alsa") == 0
         return has_pulse or has_alsa
-    elif platform in ["windows", "osx"]:
+    elif platform in ["windows", "osx", "iphone"]:
         return True
     else:
         return False

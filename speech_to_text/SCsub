@@ -98,7 +98,7 @@ if platform == "x11":
 elif platform == "windows":
     base_srcs.append("libsphinxad/ad_win32.c")
 
-elif platform == "osx":
+elif platform in ["osx", "iphone"]:
     base_srcs.append("libsphinxad/ad_base.c")
 
 else:

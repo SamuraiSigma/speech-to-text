@@ -17,6 +17,7 @@ The module works on the following platforms:
 - Windows
 - OS X
 - Unix (with **PulseAudio** or **ALSA** requirement)
+- iOS
 
 Check if your system fulfills Godot's building [requirements][compilingReq] on the
 desired platform, or for cross-compiling to another system.
