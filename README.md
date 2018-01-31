@@ -12,12 +12,17 @@ that captures the user's microphone input and converts it to text.
 Requirements
 ------------
 
-The module works on the following platforms:
+The module can be built with Godot 2.1.4 on the following platforms:
 
 - Windows
 - OS X
 - Unix (with **PulseAudio** or **ALSA** requirement)
 - iOS
+- Android (untested; see below for more info)
+
+Barring Android, export templates were successfully built, on all referred platforms,
+for Godot 2.1.4 with *Speech to Text*. Godot's repository can be found
+[here][godotRepo].
 
 Check if your system fulfills Godot's building [requirements][compilingReq] on the
 desired platform, or for cross-compiling to another system.
@@ -25,9 +30,6 @@ desired platform, or for cross-compiling to another system.
 Other than that, *Speech to Text* has no additional requirements. It is intended to
 be used alongside a microphone connected to the system, which will capture voice
 input.
-
-I've tested it successfully on Godot 2.1.3 and 2.1.4 builds. Godot's repository can
-be found [here][godotRepo].
 
 [compilingReq]: http://docs.godotengine.org/en/stable/development/compiling/index.html "Compiling Requirements"
 [godotRepo]: https://github.com/godotengine/godot "Godot repository"
