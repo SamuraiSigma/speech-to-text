@@ -12,17 +12,16 @@ that captures the user's microphone input and converts it to text.
 Requirements
 ------------
 
-The module can be built with Godot 2.1.4 on the following platforms:
+The module can be built with Godot 3.0 on the following platforms:
 
 - Windows
 - OS X
 - Unix (with **PulseAudio** or **ALSA** requirement)
 - iOS
-- Android (untested; see below for more info)
+- Android
 
-Barring Android, export templates were successfully built, on all referred platforms,
-for Godot 2.1.4 with *Speech to Text*. Godot's repository can be found
-[here][godotRepo].
+On all referred platforms, export templates were successfully built for Godot 3.0
+with *Speech to Text*. Godot's repository can be found [here][godotRepo].
 
 Check if your system fulfills Godot's building [requirements][compilingReq] on the
 desired platform, or for cross-compiling to another system.
@@ -31,7 +30,7 @@ Other than that, *Speech to Text* has no additional requirements. It is intended
 be used alongside a microphone connected to the system, which will capture voice
 input.
 
-[compilingReq]: http://docs.godotengine.org/en/stable/development/compiling/index.html "Compiling Requirements"
+[compilingReq]: http://docs.godotengine.org/en/3.0/development/compiling/index.html "Compiling Requirements"
 [godotRepo]: https://github.com/godotengine/godot "Godot repository"
 
 
@@ -46,18 +45,15 @@ platform supported by the module, use the equivalent tools.
        $ git clone https://github.com/godotengine/godot
 
 2. Inside the cloned repository, change to the latest stable build that the module
-   works on (when these instructions were made, it was 2.1.4).
+   works on (when these instructions were made, it was 3.0).
 
-       $ git checkout 2.1.4-stable
+       $ git checkout 3.0-stable
 
 3. Add the this repository's `speech_to_text` folder to your Godot `modules/`
    directory.
 
-4. Build Godot. Go to the root of your Godot source and type:
-
-       $ scons platform=<my_platform>
-
-   where `<my_platform>` can be `windows` or `x11` (*Unix*).
+4. Build Godot, according to your desired platform (follow the
+   [instructions][howToBuild] given on the Godot Docs).
 
 5. Run Godot:
 
@@ -80,6 +76,8 @@ platform supported by the module, use the equivalent tools.
    6.5. Check if the ***STTRunner*** appears in the list of nodes; it should probably
         be near the end of the list. There is also a search bar for convenience.
 
+[howToBuild]: http://docs.godotengine.org/en/3.0/development/compiling/index.html "How to build Godot"
+
 
 Usage
 -----
@@ -101,7 +99,7 @@ Check the instructions and requirements on the Godot Docs [site][exportTemplates
 learn how to build export templates for a specific system. This includes cross
 compiling for opposite bits or even for a different platform.
 
-[exportTemplates]: http://docs.godotengine.org/en/stable/development/compiling/index.html "Building export templates"
+[exportTemplates]: http://docs.godotengine.org/en/3.0/development/compiling/index.html "Building export templates"
 
 
 Demo: Color Clutter
