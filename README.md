@@ -25,18 +25,16 @@ for Godot 2.1.4 with *Speech to Text*. Godot's repository can be found
 [here][godotRepo].
 
 Check if your system fulfills Godot's building [requirements][compilingReq] on the
-desired platform, or for cross-compiling to another system.
-
-Other than that, *Speech to Text* has no additional requirements. It is intended to
-be used alongside a microphone connected to the system, which will capture voice
-input.
+desired platform, or for cross-compiling to another system. Other than that, *Speech
+to Text* has no additional requirements. It is intended to be used alongside a
+microphone connected to the system, which will capture voice input.
 
 [compilingReq]: http://docs.godotengine.org/en/stable/development/compiling/index.html "Compiling Requirements"
 [godotRepo]: https://github.com/godotengine/godot "Godot repository"
 
 
 Building Godot with the module
---------------------------------
+------------------------------
 
 The following steps assume that you are on a **Unix** system. For a different
 platform supported by the module, use the equivalent tools.
@@ -50,14 +48,10 @@ platform supported by the module, use the equivalent tools.
 
        $ git checkout 2.1.4-stable
 
-3. Add the this repository's `speech_to_text` folder to your Godot `modules/`
-   directory.
+3. Add this repository's `speech_to_text/` folder to your Godot `modules/` directory.
 
-4. Build Godot. Go to the root of your Godot source and type:
-
-       $ scons platform=<my_platform>
-
-   where `<my_platform>` can be `windows` or `x11` (*Unix*).
+4. Build Godot, according to your desired platform (follow the
+   [instructions][howToBuild] given on the Godot Docs).
 
 5. Run Godot:
 
@@ -79,6 +73,8 @@ platform supported by the module, use the equivalent tools.
 
    6.5. Check if the ***STTRunner*** appears in the list of nodes; it should probably
         be near the end of the list. There is also a search bar for convenience.
+
+[howToBuild]: http://docs.godotengine.org/en/3.0/development/compiling/index.html "How to build Godot"
 
 
 Usage
